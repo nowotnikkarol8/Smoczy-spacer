@@ -101,9 +101,12 @@ body {
     object-fit: cover;
 }
 
+/* Ograniczenie wysokości i wewnętrzne przewijanie dla całego bloku opisu */
 .camera-description {
     width: 100%;
     max-width: 550px;
+    max-height: 320px;
+    overflow-y: auto;
     margin: 20px 0;
     padding: 20px;
     line-height: 1.6;
@@ -113,8 +116,26 @@ body {
     box-sizing: border-box;
 }
 
+/* Stylizacja paska przewijania (scrollbara) */
+.camera-description::-webkit-scrollbar {
+    width: 6px;
+}
+.camera-description::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+.camera-description::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.35);
+    border-radius: 10px;
+}
+.camera-description::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 215, 0, 0.6);
+}
+
+/* NAPRAWIONE: Usunięto position: sticky - teraz nagłówek przewija się normalnie */
 .camera-description h3 {
     margin-top: 0;
+    margin-bottom: 15px;
     color: #ffd700;
     text-align: center;
     font-size: 1.3rem;
@@ -135,7 +156,7 @@ body {
     border-top: 1px solid rgba(255, 215, 0, 0.15);
     font-size: calc(0.9rem + 0.1vw);
     color: #f5f5f7;
-    text-align: center;
+    text-align: justify;
     line-height: 1.5;
 }
 
@@ -481,6 +502,9 @@ nav button.active-nav {
         padding: 15px 10px;
         margin: 5px auto;
     }
+    .camera-description {
+        max-height: 220px;
+    }
     #backBtn {
         top: 10px;
         left: 10px;
@@ -653,7 +677,7 @@ nav button.active-nav {
 // ============================================================================
 //  ✍️ TUTAJ WPISZ SWÓJ WŁASNY TEKST, KTÓRY MA SIĘ POJAWIĆ POD CIEKAWOSTKĄ:
 // ============================================================================
-const mojDodatkowyTekst = "Magiczna Szkatułka może stać się Twoim aparatem fotograficznym. Camera Obscura – znana
+const mojDodatkowyTekst = `Magiczna Szkatułka może stać się Twoim aparatem fotograficznym. Camera Obscura – znana
 od starożytności jest pierwowzorem aparatu. Możesz z niej stworzyć aparat otworkowy,
 który zamiast obiektywu wykorzystuje malutki otworek. Aby wykonać zdjęcie, należy na
 przeciwległej ściance szkatułki umieścić w ciemni materiał światłoczuły (np. papier
@@ -661,7 +685,7 @@ fotograficzny), następnie zamknąć szczelnie szkatułkę i odsłonić otworek 
 kiedy znajdziesz obiekt, który chcesz sfotografować. Kiedy obraz się naświetli (np. po kilku
 minutach) ponownie musisz zamknąć szczelnie szkatułkę i udać się do ciemni, żeby wywołać i
 utrwalić naświetlony obraz. Fotografia otworkowa wymaga czasu, zaangażowania i
-eksperymentowania, ale daje ogromną satysfakcję.";
+eksperymentowania, ale daje ogromną satysfakcję.`;
 // ============================================================================
 
 let currentCategoryIndex = 0; 
@@ -696,14 +720,13 @@ const quests = {
         { img: "Ra.5.jpg", c: 2 },
         { img: "Ra.6.jpg", c: 2 }
     ],
-    // Zaktualizowano: Dodano 2 nowe miejsca na zdjęcia (razem 6 zadań)
     sukiennice: [
         { img: "Su.1.jpg", c: 3 },
         { img: "Su.2.jpg", c: 3 },
         { img: "Su.3.jpg", c: 3 },
         { img: "Su.4.jpg", c: 3 },
-        { img: "Su.5.jpg", c: 3 }, // Nowe zdjęcie 5
-        { img: "Su.6.jpg", c: 3 }  // Nowe zdjęcie 6
+        { img: "Su.5.jpg", c: 3 }, 
+        { img: "Su.6.jpg", c: 3 }  
     ]
 };
 
