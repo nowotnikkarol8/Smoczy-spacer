@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -133,20 +132,29 @@ body {
 .middle-logo-text {
     font-size: calc(1.5rem + 0.8vw);
     font-weight: 800;
-    margin: 20px 0 10px 0;
+    margin: 20px 0 2px 0;
     background: linear-gradient(135deg, #ffd700, #ff9900);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
+.subtitle-text {
+    font-size: calc(0.95rem + 0.3vw);
+    font-weight: 600;
+    color: #e4e4e7;
+    margin: 0 0 15px 0;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+}
+
 .instruction-text {
     max-width: 550px;
-    font-size: calc(1rem + 0.2vw);
+    font-size: calc(0.95rem + 0.2vw);
     color: #ffd700;
     margin: 10px 0 25px 0;
     font-weight: 600;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 #menuButtons {
@@ -287,12 +295,12 @@ nav {
     margin-bottom: 20px;
     z-index: 10;
     width: 100%;
-    max-width: 500px;
+    max-width: 580px;
 }
 
 nav button {
-    padding: 10px 16px;
-    font-size: 0.9rem;
+    padding: 10px 14px;
+    font-size: 0.85rem;
     font-weight: 600;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
@@ -301,7 +309,7 @@ nav button {
     color: #a1a1aa;
     cursor: pointer;
     flex: 1 1 auto;
-    min-width: 100px;
+    min-width: 90px;
     transition: all 0.15s ease;
 }
 
@@ -506,7 +514,7 @@ nav button.active-nav {
     </div>
     
     <div class="camera-description glass-panel">
-        <h3>I dlaczego obraz jest „do góry nogami"?</h3>
+        <h3> dlaczego obraz jest „do góry nogami"?</h3>
         <p>
             Promienie światła odbite od różnych punktów obserwowanego obiektu wpadają przez mały otwór do wnętrza zaciemnionego pudełka. Światło porusza się po liniach prostych, a zatem promienie odbite z góry obiektu biegną w dół, a promienie z dołu biegną w górę. W efekcie na przeciwległej ściance pudełka powstaje obraz rzeczywisty, ale odwrócony do góry nogami i w odbiciu lustrzanym oraz pomniejszony. Im mniejszy otworek, tym obraz jest bardziej ostry, ale jednocześnie ciemniejszy.
         </p>
@@ -515,10 +523,12 @@ nav button.active-nav {
         </div>
     </div>
     
+    <!-- DODANO PODNAPIS ORAZ ZMODYFIKOWANO TEKST INSTRUKCJI -->
     <div class="middle-logo-text">🐉 Smoczy Spacer</div>
+    <div class="subtitle-text">Kraków, czyli od szczegółu do ogółu</div>
 
     <div class="instruction-text">
-        Sprawdź swoją spostrzegawczość i odnajdź te fragmenty budynku ukazanych na fotografiach
+        Sprawdź swoją spostrzegawczość i odgadnij jaki to budynek po fragmentach detali
     </div>
 
     <div id="menuButtons">
@@ -572,10 +582,12 @@ nav button.active-nav {
     </div>
 </div>
 
+<!-- DODANO SUKIENNICE DO NAWIGACJI -->
 <nav id="gameNav">
     <button id="nav-mariacki" onclick="selectCategory('mariacki')">⛪ Mariacki</button>
     <button id="nav-wojciech" onclick="selectCategory('wojciech')">⛪ Św. Wojciecha</button>
     <button id="nav-ratusz" onclick="selectCategory('ratusz')">🏛️ Ratusz</button>
+    <button id="nav-sukiennice" onclick="selectCategory('sukiennice')">🏛️ Sukiennice</button>
 </nav>
 
 <div id="mariacki" class="section glass-panel">
@@ -602,6 +614,15 @@ nav button.active-nav {
     <div class="section-title">Wieża Ratuszowa</div>
 </div>
 
+<!-- DODANO PODGLĄD DLA SUKIENNIC -->
+<div id="sukiennice" class="section glass-panel">
+    <div class="section-img-container">
+        <img class="section-img" src="" alt="Sukiennice" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <div class="section-icon-fallback" style="text-align: center; line-height: 180px; font-size: 50px;">🏛️</div>
+    </div>
+    <div class="section-title">Sukiennice</div>
+</div>
+
 <div id="quizBox">
     <div class="glass-panel quiz-card">
         <div id="quizHearts" class="quiz-hearts-container">❤️❤️❤️❤️</div>
@@ -621,16 +642,17 @@ nav button.active-nav {
 
 <script>
 let currentCategoryIndex = 0; 
-const categoryOrder = ["mariacki", "wojciech", "ratusz"];
+// Sukiennice ustawione jako ostatni poziom gry
+const categoryOrder = ["mariacki", "wojciech", "ratusz", "sukiennice"];
 let pendingSection = "mariacki";
 let coins = 0;
 let questIndex = 0;
 let wrongAnswersInRow = 0; 
 const maxLives = 4;
 
-// Zmiana bazy odpowiedzi z Wojciech -> Wojciecha
 const poolAnswers = ["Kościół Mariacki", "Św. Wojciecha", "Wieża Ratuszowa", "Sukiennice", "Wawel", "Brama Floriańska"];
 
+// Dodano 4 zdjęcia dla nowej rundy: sukiennice (indeks poprawnej odpowiedzi w poolAnswers to c: 3)
 const quests = {
     mariacki: [
         { img: "IMG_20260609_140814.jpg", c: 0 },
@@ -651,6 +673,12 @@ const quests = {
         { img: "Ra.4.jpg", c: 2 },
         { img: "Ra.5.jpg", c: 2 },
         { img: "Ra.6.jpg", c: 2 }
+    ],
+    sukiennice: [
+        { img: "Suk.1.jpg", c: 3 },
+        { img: "Suk.2.jpg", c: 3 },
+        { img: "Suk.3.jpg", c: 3 },
+        { img: "Suk.4.jpg", c: 3 }
     ]
 };
 
@@ -707,12 +735,10 @@ function openQuest(){
     inputEl.focus();
 }
 
-/* ⚙️ DYNAMICZNE GENEROWANIE SERDECZEK W DWÓCH MIEJSCACH */
 function updateLivesDisplay() {
     let currentLives = maxLives - wrongAnswersInRow;
     if(currentLives < 0) currentLives = 0;
     
-    // Tworzenie ciągu serduszek (np. ❤️❤️❤️🖤)
     let heartsString = "";
     for(let i = 0; i < maxLives; i++) {
         if(i < currentLives) {
@@ -722,7 +748,6 @@ function updateLivesDisplay() {
         }
     }
     
-    // Aktualizacja w górnym pasku oraz bezpośrednio nad zdjęciem quizu
     document.getElementById("lives").innerText = heartsString;
     document.getElementById("quizHearts").innerText = heartsString;
 }
@@ -740,7 +765,7 @@ function submitAnswer() {
     if(normalizedCorrect.includes(normalizedTyped) && normalizedTyped.length >= 3){
         coins += 10;
         updateCoins();
-        saveGame(); // Szybki zapis tylko w momencie zmiany stanu punktów
+        saveGame();
         document.getElementById("quizBox").style.display = "none";
         startTransitionBox(); 
     } else {
@@ -767,7 +792,7 @@ function startTransitionBox() {
     
     let width = 0;
     const duration = 5000; 
-    const intervalTime = 30; // Zmniejszone opóźnienie sprawdzania dla pełnej płynności paska
+    const intervalTime = 30; 
     const step = (intervalTime / duration) * 100;
     
     const loadingInterval = setInterval(() => {
@@ -789,7 +814,7 @@ function confirmTransition() {
 function nextCategoryAction() {
     currentCategoryIndex++;
     if(currentCategoryIndex >= categoryOrder.length) {
-        showSummary(true);
+        showSummary(true); // Wyświetla sukces dopiero po ukończeniu wszystkich kategorii, w tym Sukiennic
     } else {
         selectCategory(categoryOrder[currentCategoryIndex]);
     }
@@ -801,7 +826,7 @@ function showSummary(isWin) {
     if (isWin) {
         titleEl.innerText = "🎉 Sukces!";
         msgEl.style.color = "#4cd964";
-        msgEl.innerText = "Gratulacje! Odgadłeś lokalizacje i pomyślnie ukończyłeś grę!";
+        msgEl.innerText = "Gratulacje! Odgadłeś wszystkie lokalizacje i pomyślnie ukończyłeś cały Smoczy Spacer!";
         coins += 50; 
         updateCoins();
         saveGame();
@@ -849,7 +874,6 @@ function loadGame(){
 }
 function updateCoins(){ document.getElementById("coins").innerText = coins; }
 
-/* ⚡ ZOPTYMALIZOWANE GENEROWANIE ISKIER - lżejsze dla procesora telefonicznego */
 function spawnScale(){
     const sparks = ["✨", "🔥"];
     const s = document.createElement("div");
@@ -861,7 +885,7 @@ function spawnScale(){
     document.body.appendChild(s);
     setTimeout(() => s.remove(), 6000);
 }
-setInterval(spawnScale, 600); // Rzadziej renderowane, by strona nie miała mikro-przycięć
+setInterval(spawnScale, 600);
 
 document.getElementById("userAnswer").addEventListener("keyup", function(event) {
     if (event.key === "Enter") { submitAnswer(); }
@@ -872,5 +896,3 @@ loadGame();
 
 </body>
 </html>
-
-```
