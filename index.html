@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -45,7 +46,7 @@ body {
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
 }
 
-/* 🔮 MENU GŁÓWNE - RESPONSYWNE I ELASTYCZNE */
+/* 🔮 MENU GŁÓWNE */
 #mainMenu {
     display: flex;
     flex-direction: column;
@@ -156,7 +157,7 @@ body {
     width: 100%;
 }
 
-/* 🔘 PRZYCISKI - AUTOMATYCZNE SKALOWANIE */
+/* 🔘 PRZYCISKI */
 .btn-primary {
     width: 100%;
     max-width: 280px;
@@ -199,7 +200,7 @@ body {
     border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* ⬅ PRZYCISK COFNIJ - ZAWSZE W LEWYM GÓRNYM ROGU */
+/* ⬅ PRZYCISK COFNIJ */
 #backBtn {
     position: fixed;
     top: 20px;
@@ -266,7 +267,7 @@ body {
     z-index: 3000;
 }
 
-/* 🧭 NAWIGACJA - DOPASOWANA DO EKRANU */
+/* 🧭 NAWIGACJA */
 nav {
     display: none;
     justify-content: center;
@@ -342,8 +343,8 @@ nav button.active-nav {
     padding: 10px;
 }
 
-/* ❓ POPUP QUIZU */
-#quizBox, #settingsBox, #summaryBox {
+/* ❓ POPUPY I EKRAN PRZEJŚCIOWY */
+#quizBox, #settingsBox, #summaryBox, #transitionBox {
     position: fixed;
     top: 0;
     left: 0;
@@ -353,7 +354,7 @@ nav button.active-nav {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(5, 6, 12, 0.9);
+    background: rgba(5, 6, 12, 0.95);
     backdrop-filter: blur(10px);
     z-index: 999;
     padding: 15px;
@@ -363,7 +364,7 @@ nav button.active-nav {
 .quiz-card {
     width: 100%;
     max-width: 440px;
-    padding: 20px;
+    padding: 25px;
     text-align: center;
     box-sizing: border-box;
 }
@@ -382,6 +383,25 @@ nav button.active-nav {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+/* ⏳ PROGRESS BAR (PASEK ŁADOWANIA) */
+.progress-container {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    height: 12px;
+    margin: 25px 0;
+    overflow: hidden;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ffd700, #ff9900);
+    box-shadow: 0 0 10px #ffd700;
+    border-radius: 10px;
 }
 
 /* ⌨️ INPUTY */
@@ -464,7 +484,6 @@ nav button.active-nav {
 <div id="mainMenu" class="glass-panel">
     <div id="title">🔮 Magiczna Szkatułka</div>
     
-    <!-- Nowy tekst wprowadzający nad obrazkiem -->
     <div class="welcome-text">
         Jeśli trafiliście na tę stronę, to prawdopodobnie trzymacie teraz w rękach <strong>MAGICZNĄ SZKATUŁKĘ</strong>, która ma wiele zastosowań, między innymi może być aparatem fotograficznym.....<br><br>
         Otwórz wieczko i zajrzyj przez mały otworek, zlokalizowany na jednej ze ścianek. Co widzisz?
@@ -475,7 +494,6 @@ nav button.active-nav {
         <div class="section-icon-fallback" style="display:none; line-height: 200px; text-align: center; font-size: 50px;">📸</div>
     </div>
     
-    <!-- Zaktualizowany opis Camera Obscura wraz z ciekawostką -->
     <div class="camera-description glass-panel">
         <h3>I dlaczego obraz jest „do góry nogami"?</h3>
         <p>
@@ -525,6 +543,21 @@ nav button.active-nav {
         <h2 id="summaryTitle">📊 Wynik</h2>
         <div id="summaryMessage">Wiadomość motywacyjna</div>
         <button class="btn-primary" style="width: 100%; margin-top: 15px;" onclick="closeSummary()">Kontynuuj</button>
+    </div>
+</div>
+
+<div id="transitionBox">
+    <div class="glass-panel quiz-card">
+        <h2 style="color: #ffd700; margin-bottom: 15px;">🎉 Gratulacje!</h2>
+        <p style="font-size: 1.1rem; line-height: 1.5; color: #fff;">
+            Teraz pójdź i sprawdź swoją spostrzegawczość! Zobacz, w jakim czasie znajdziesz te wszystkie fragmenty detali, które widziałeś na zdjęciach.
+        </p>
+        
+        <div class="progress-container">
+            <div id="transitionProgressBar" class="progress-bar"></div>
+        </div>
+        
+        <button id="nextLocationBtn" class="btn-primary" style="display: none; margin: 10px auto 0 auto;" onclick="confirmTransition()">Przejdź dalej ▶</button>
     </div>
 </div>
 
@@ -681,7 +714,7 @@ function submitAnswer() {
         updateCoins();
         saveGame();
         document.getElementById("quizBox").style.display = "none";
-        nextCategoryAction(); 
+        startTransitionBox(); // Uruchomienie ekranu przejściowego zamiast natychmiastowego przejścia
     } else {
         wrongAnswersInRow++;
         updateLivesDisplay();
@@ -693,6 +726,37 @@ function submitAnswer() {
         questIndex++;
         openQuest();
     }
+}
+
+/* ⚙️ OBSŁUGA NOWEGO FUNKCJONALNEGO PASKA ŁADOWANIA */
+function startTransitionBox() {
+    const transBox = document.getElementById("transitionBox");
+    const progressBar = document.getElementById("transitionProgressBar");
+    const nextBtn = document.getElementById("nextLocationBtn");
+    
+    progressBar.style.width = "0%";
+    nextBtn.style.display = "none";
+    transBox.style.display = "flex";
+    
+    let width = 0;
+    const duration = 5000; // 5 sekund
+    const intervalTime = 50; // co 50ms aktualizacja
+    const step = (intervalTime / duration) * 100;
+    
+    const loadingInterval = setInterval(() => {
+        width += step;
+        if (width >= 100) {
+            width = 100;
+            clearInterval(loadingInterval);
+            nextBtn.style.display = "block"; // Pokazuje przycisk po zakończeniu ładowania
+        }
+        progressBar.style.width = width + "%";
+    }, intervalTime);
+}
+
+function confirmTransition() {
+    document.getElementById("transitionBox").style.display = "none";
+    nextCategoryAction();
 }
 
 function nextCategoryAction() {
@@ -733,6 +797,7 @@ function goBack(){
     }
     document.getElementById("quizBox").style.display = "none";
     document.getElementById("settingsBox").style.display = "none";
+    document.getElementById("transitionBox").style.display = "none";
     document.getElementById("mainMenu").style.display = "flex";
     document.getElementById("backBtn").style.display = "none";
     document.getElementById("gameNav").style.display = "none";
@@ -780,3 +845,5 @@ setInterval(saveGame, 5000);
 
 </body>
 </html>
+
+```
