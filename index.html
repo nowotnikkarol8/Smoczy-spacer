@@ -129,6 +129,16 @@ body {
     font-style: italic;
 }
 
+.additional-menu-text {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 215, 0, 0.15);
+    font-size: calc(0.9rem + 0.1vw);
+    color: #f5f5f7;
+    text-align: center;
+    line-height: 1.5;
+}
+
 .middle-logo-text {
     font-size: calc(1.5rem + 0.8vw);
     font-weight: 800;
@@ -521,6 +531,8 @@ nav button.active-nav {
         <div class="fun-fact">
             💡 <strong>Ciekawostka:</strong> Na siatkówce ludzkiego oka obraz także jest odwrócony. To nasz mózg w pierwszych tygodniach życia uczy się interpretować i dostosowywać obraz tak, żebyśmy widzieli świat w prawidłowej orientacji.
         </div>
+        
+        <div id="customMenuText" class="additional-menu-text"></div>
     </div>
     
     <div class="middle-logo-text">🐉 Smoczy Spacer</div>
@@ -638,18 +650,24 @@ nav button.active-nav {
 </div>
 
 <script>
+// ============================================================================
+//  ✍️ TUTAJ WPISZ SWÓJ WŁASNY TEKST, KTÓRY MA SIĘ POJAWIĆ POD CIEKAWOSTKĄ:
+// ============================================================================
+const mojDodatkowyTekst = "Tutaj możesz wpisać swój dowolny tekst. Może to być kolejna informacja o grze, podpowiedź lub instrukcja dotycząca Magicznej Szkatułki!";
+// ============================================================================
+
 let currentCategoryIndex = 0; 
-// Sukiennice ustawione jako ostatni poziom gry
 const categoryOrder = ["mariacki", "wojciech", "ratusz", "sukiennice"];
 let pendingSection = "mariacki";
 let coins = 0;
 let questIndex = 0;
 let wrongAnswersInRow = 0; 
-const maxLives = 4;
+
+// ZMIENIONO: dynamiczny limit żyć (zależny od lokacji)
+let maxLives = 4; 
 
 const poolAnswers = ["Kościół Mariacki", "Św. Wojciecha", "Wieża Ratuszowa", "Sukiennice", "Wawel", "Brama Floriańska"];
 
-// Dodano 4 zdjęcia dla nowej rundy: sukiennice (indeks poprawnej odpowiedzi w poolAnswers to c: 3)
 const quests = {
     mariacki: [
         { img: "IMG_20260609_140814.jpg", c: 0 },
@@ -679,6 +697,16 @@ const quests = {
     ]
 };
 
+function initCustomText() {
+    const container = document.getElementById("customMenuText");
+    if(mojDodatkowyTekst && mojDodatkowyTekst.trim() !== "") {
+        container.innerHTML = mojDodatkowyTekst;
+        container.style.display = "block";
+    } else {
+        container.style.display = "none";
+    }
+}
+
 function normalizeText(text) {
     if (!text) return "";
     return text.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ł/g, "l"); 
@@ -701,6 +729,13 @@ function selectCategory(category) {
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-nav'));
     const navBtn = document.getElementById(`nav-${category}`);
     if(navBtn) navBtn.classList.add('active-nav');
+    
+    // ZMIENIONO: Sprawdzenie kategorii i przydzielenie 6 szans dla ratusza oraz sukiennic
+    if(category === "ratusz" || category === "sukiennice") {
+        maxLives = 6;
+    } else {
+        maxLives = 4;
+    }
     
     questIndex = 0;
     wrongAnswersInRow = 0;
@@ -811,7 +846,7 @@ function confirmTransition() {
 function nextCategoryAction() {
     currentCategoryIndex++;
     if(currentCategoryIndex >= categoryOrder.length) {
-        showSummary(true); // Wyświetla sukces dopiero po ukończeniu wszystkich kategorii, w tym Sukiennic
+        showSummary(true); 
     } else {
         selectCategory(categoryOrder[currentCategoryIndex]);
     }
@@ -889,6 +924,7 @@ document.getElementById("userAnswer").addEventListener("keyup", function(event) 
 });
 
 loadGame();
+initCustomText();
 </script>
 
 </body>
