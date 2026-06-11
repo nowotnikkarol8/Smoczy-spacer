@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smoczy Spacer</title>
+<title>Magiczna Szkatułka</title>
 
 <link rel="icon" type="image/x-icon" href="logo.png">
 
@@ -26,7 +26,7 @@ body {
     -webkit-user-select: none;
     user-select: none;
     box-sizing: border-box;
-    padding-top: 80px; /* Przestrzeń na menu górne w trakcie gry */
+    padding-top: 80px;
 }
 
 @keyframes bgMove {
@@ -45,7 +45,7 @@ body {
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
 }
 
-/* 🐉 MENU GŁÓWNE */
+/* 🔮 MENU GŁÓWNE */
 #mainMenu {
     position: fixed;
     top: 0;
@@ -73,6 +73,25 @@ body {
     -webkit-text-fill-color: transparent;
     margin-bottom: 10px;
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+}
+
+.instruction-text {
+    max-width: 600px;
+    font-size: 1.2rem;
+    color: #ffd700;
+    margin: 15px 0 25px 0;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.middle-logo-text {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 25px 0 10px 0;
+    background: linear-gradient(135deg, #ffd700, #ff9900);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 .menu-image-container {
@@ -115,6 +134,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    margin-bottom: 40px; /* Przestrzeń na dole menu */
 }
 
 /* 🔘 PRZYCISKI */
@@ -184,6 +204,14 @@ body {
     gap: 12px;
     z-index: 2000;
     display: none;
+}
+
+#livesBox {
+    padding: 12px 20px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-color: rgba(255, 59, 48, 0.4);
+    color: #ff3b30;
 }
 
 #coinsBox {
@@ -281,7 +309,7 @@ nav button.active-nav {
     z-index: 10;
     animation: scaleUp 0.3s ease-out;
     overflow: hidden;
-    position: relative; /* Zmienione z absolute, by lepiej działało na mobile */
+    position: relative;
     margin-top: 20px;
 }
 
@@ -402,7 +430,6 @@ nav button.active-nav {
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
 
-/* Statystyki podsumowania */
 .summary-stat {
     font-size: 1.2rem;
     margin: 8px 0;
@@ -447,10 +474,19 @@ nav button.active-nav {
 /* 📱 RESPONSYWNOŚĆ (POPRYWKA DLA TELEFONÓW) */
 @media (max-width: 768px) {
     body {
-        padding-top: 140px; /* Więcej miejsca, bo nav na telefonie może pójść niżej */
+        padding-top: 140px;
     }
     #title {
         font-size: 2.6rem;
+    }
+    .middle-logo-text {
+        font-size: 1.7rem;
+        margin: 15px 0 5px 0;
+    }
+    .instruction-text {
+        font-size: 1rem;
+        padding: 0 10px;
+        margin-bottom: 15px;
     }
     .camera-description {
         font-size: 0.95rem;
@@ -481,6 +517,11 @@ nav button.active-nav {
         top: auto;
         bottom: 20px;
         right: 20px;
+        gap: 6px;
+    }
+    #livesBox, #coinsBox {
+        padding: 8px 12px;
+        font-size: 0.9rem;
     }
     #shopPanel {
         top: auto;
@@ -504,10 +545,10 @@ nav button.active-nav {
 <body>
 
 <div id="mainMenu">
-    <div id="title">🐉 Smoczy Spacer</div>
+    <div id="title">🔮 Magiczna Szkatułka</div>
     
     <div class="menu-image-container">
-        <img class="menu-img" src="Cameraobscura2.png" alt="Smoczy Spacer menu" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <img class="menu-img" src="Cameraobscura2.png" alt="Menu obraz" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
         <div class="section-icon-fallback" style="display:none; line-height: 200px;">📸</div>
     </div>
     
@@ -518,6 +559,12 @@ nav button.active-nav {
         </p>
     </div>
     
+    <div class="middle-logo-text">🐉 Smoczy Spacer</div>
+
+    <div class="instruction-text">
+        Sprawdź swoją spostrzegawczość i odnajdź te fragmenty budynku ukazanych na fotografiach
+    </div>
+
     <div id="menuButtons">
         <button class="btn-primary" onclick="startGame()">▶ Graj</button>
         <button class="btn-secondary" onclick="openSettings()">⚙ Ustawienia</button>
@@ -527,6 +574,7 @@ nav button.active-nav {
 <div id="backBtn" class="glass-panel" onclick="goBack()">⬅ Powrót</div>
 
 <div id="hud-top">
+    <div id="livesBox" class="glass-panel">Szanse: <span id="lives">4 (X)</span></div>
     <div id="coinsBox" class="glass-panel">✨ Skarby: <span id="coins" style="color: #ffd700;">0</span></div>
     <div id="shopBtn" class="glass-panel" onclick="toggleShop()">🛒</div>
 </div>
@@ -605,6 +653,7 @@ let pendingSection = "mariacki";
 let coins = 0;
 let questIndex = 0;
 let wrongAnswersInRow = 0; 
+const maxLives = 4;
 
 /* 📚 BAZA PYTAŃ */
 const poolAnswers = ["Kościół Mariacki", "Św. Wojciech", "Wieża Ratuszowa", "Sukiennice", "Wawel", "Brama Floriańska"];
@@ -632,14 +681,13 @@ const quests = {
     ]
 };
 
-/* Funkcja usuwająca polskie znaki, wielkie litery oraz zbędne spacje */
 function normalizeText(text) {
     if (!text) return "";
     return text
         .toLowerCase()
         .trim()
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "") // Usuwa znaki diakrytyczne
+        .replace(/[\u0300-\u036f]/g, "")
         .replace(/ł/g, "l"); 
 }
 
@@ -665,6 +713,7 @@ function selectCategory(category) {
     
     questIndex = 0;
     wrongAnswersInRow = 0;
+    updateLivesDisplay();
     
     openQuest();
 }
@@ -688,16 +737,21 @@ function openQuest(){
     const q = currentPool[questIndex];
     document.getElementById("quizBox").style.display = "flex";
 
-    // Ładowanie obrazka
     const imgEl = document.getElementById("quizImage");
     imgEl.style.display = "block";
     imgEl.nextElementSibling.style.display = "none";
     imgEl.src = q.img;
 
-    // Czyszczenie pola tekstowego i focus
     const inputEl = document.getElementById("userAnswer");
     inputEl.value = "";
     inputEl.focus();
+}
+
+/* ODŚWIEŻANIE LICZNIKA SZANS */
+function updateLivesDisplay() {
+    let currentLives = maxLives - wrongAnswersInRow;
+    if(currentLives < 0) currentLives = 0;
+    document.getElementById("lives").innerText = `${currentLives} (X)`;
 }
 
 /* FUNKCJA URUCHAMIANA PO KLIKNIĘCIU ZATWIERDŹ */
@@ -713,7 +767,6 @@ function submitAnswer() {
     const normalizedTyped = normalizeText(typedAnswer);
     const normalizedCorrect = normalizeText(correctAnswerText);
 
-    // ZMIANA: Sprawdzamy, czy prawidłowa pełna nazwa ZAWIERA to, co wpisał użytkownik (np. "mariacki" pasuje do "kościół mariacki")
     if(normalizedCorrect.includes(normalizedTyped) && normalizedTyped.length >= 3){
         coins += 10;
         updateCoins();
@@ -723,8 +776,9 @@ function submitAnswer() {
         nextCategoryAction(); 
     } else {
         wrongAnswersInRow++;
+        updateLivesDisplay();
         
-        if(wrongAnswersInRow >= 6 || (questIndex + 1) >= quests[pendingSection].length) {
+        if(wrongAnswersInRow >= maxLives || (questIndex + 1) >= quests[pendingSection].length) {
             document.getElementById("quizBox").style.display = "none";
             showSummary(false);
             return;
@@ -735,7 +789,6 @@ function submitAnswer() {
     }
 }
 
-/* PRZEJŚCIE DO KOLEJNEJ PODKATEGORII LUB WYGRANA */
 function nextCategoryAction() {
     currentCategoryIndex++;
     if(currentCategoryIndex >= categoryOrder.length) {
@@ -745,7 +798,6 @@ function nextCategoryAction() {
     }
 }
 
-/* POKAZANIE PODSUMOWANIA (Wygrana / Przegrana) */
 function showSummary(isWin) {
     const titleEl = document.getElementById("summaryTitle");
     const msgEl = document.getElementById("summaryMessage");
@@ -753,26 +805,24 @@ function showSummary(isWin) {
     if (isWin) {
         titleEl.innerText = "🎉 Sukces!";
         msgEl.style.color = "#4cd964";
-        msgEl.innerText = "Gratulacje! Odgadłeś lokalizacje i pomyślnie ukończyłeś Smoczy Spacer!";
+        msgEl.innerText = "Gratulacje! Odgadłeś lokalizacje i pomyślnie ukończyłeś grę!";
         coins += 50; 
         updateCoins();
         saveGame();
     } else {
         titleEl.innerText = "❌ Koniec Gry";
         msgEl.style.color = "#ff3b30";
-        msgEl.innerText = "Niestety, odpowiedziałeś błędnie na wszystkie pytania w tej kategorii. Spróbuj ponownie!";
+        msgEl.innerText = "Niestety, straciłeś wszystkie szanse w tej kategorii. Spróbuj ponownie!";
     }
     
     document.getElementById("summaryBox").style.display = "flex";
 }
 
-/* ZAMKNIĘCIE PODSUMOWANIA */
 function closeSummary() {
     document.getElementById("summaryBox").style.display = "none";
     goBack(); 
 }
 
-/* BACK / POWRÓT */
 function goBack(){
     if(document.getElementById("summaryBox").style.display === "flex"){
         document.getElementById("summaryBox").style.display = "none";
@@ -786,17 +836,14 @@ function goBack(){
     document.getElementById("hud-top").style.display = "none";
 }
 
-/* SETTINGS */
 function openSettings(){ document.getElementById("settingsBox").style.display = "flex"; }
 function closeSettings(){ document.getElementById("settingsBox").style.display = "none"; }
 
-/* SHOP */
 function toggleShop(){
     const s = document.getElementById("shopPanel");
     s.style.display = s.style.display === "block" ? "none" : "block";
 }
 
-/* SAVE & LOAD */
 function saveGame(){ localStorage.setItem("smoczy_spacer_save", JSON.stringify({coins})); }
 function loadGame(){
     const d = JSON.parse(localStorage.getItem("smoczy_spacer_save"));
@@ -806,7 +853,6 @@ function loadGame(){
 }
 function updateCoins(){ document.getElementById("coins").innerText = coins; }
 
-/* ATMOSFERYCZNE ISKRY */
 function spawnScale(){
     const sparks = ["✨", "🔥", "💨"];
     const s = document.createElement("div");
@@ -820,14 +866,12 @@ function spawnScale(){
 }
 setInterval(spawnScale, 400);
 
-/* NASŁUCHIWANIE ENTERA */
 document.getElementById("userAnswer").addEventListener("keyup", function(event) {
     if (event.key === "Enter") {
         submitAnswer();
     }
 });
 
-/* START */
 loadGame();
 setInterval(saveGame, 5000);
 </script>
