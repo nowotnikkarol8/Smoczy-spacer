@@ -178,7 +178,7 @@ body {
     border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* ⬅ PRZYCISK COFNIJ */
+/* ⬅ PRZYCISK COFNIJ - ZAWSZE W LEWYM GÓRNYM ROGU */
 #backBtn {
     position: fixed;
     top: 20px;
@@ -369,6 +369,7 @@ nav button.active-nav {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    align-items: center; /* Wyśrodkowanie przycisku zatwierdź i inputu */
 }
 
 .answerInput {
@@ -401,7 +402,7 @@ nav button.active-nav {
     }
 }
 
-/* 📱 FIXY DLA TELEFONÓW (W PIONIE I POZIOMIE) */
+/* 📱 FIXY DLA TELEFONÓW */
 @media (max-width: 600px) {
     body {
         padding: 10px;
@@ -410,22 +411,30 @@ nav button.active-nav {
         padding: 15px 10px;
         margin: 5px auto;
     }
+    /* Przycisk powrotu zostaje w lewym górnym rogu z mniejszym rozmiarem, żeby nie przeszkadzał */
     #backBtn {
-        top: auto;
-        bottom: 15px;
-        left: 15px;
-        padding: 8px 12px;
+        top: 10px;
+        left: 10px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+    /* HUD zostaje w prawym górnym rogu, idealnie naprzeciwko przycisku powrót */
+    #hud-top {
+        top: 10px;
+        right: 10px;
+        gap: 6px;
+    }
+    #livesBox, #coinsBox {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+    #shopBtn {
+        padding: 6px 10px;
         font-size: 0.95rem;
     }
-    #hud-top {
-        top: auto;
-        bottom: 15px;
-        right: 15px;
-    }
     #shopPanel {
-        top: auto;
-        bottom: 70px;
-        right: 15px;
+        top: 60px;
+        right: 10px;
     }
 }
 </style>
@@ -530,7 +539,7 @@ nav button.active-nav {
         
         <div class="input-container">
             <input type="text" id="userAnswer" class="answerInput" placeholder="Napisz odpowiedź..." autocomplete="off">
-            <button class="btn-primary" style="margin:0; width:100%; padding:12px;" onclick="submitAnswer()">Zatwierdź</button>
+            <button class="btn-primary" style="margin:0; width:100%; padding:12px; max-width: 280px;" onclick="submitAnswer()">Zatwierdź</button>
         </div>
     </div>
 </div>
