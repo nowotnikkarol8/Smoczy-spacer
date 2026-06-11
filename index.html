@@ -172,7 +172,7 @@ body {
     color: #000;
     background: linear-gradient(135deg, #ffd700, #ff9900);
     box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-    transition: all 0.25s ease;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 .btn-primary:hover {
@@ -192,7 +192,7 @@ body {
     font-weight: bold;
     color: #fff;
     background: rgba(255, 255, 255, 0.05);
-    transition: all 0.25s ease;
+    transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-secondary:hover {
@@ -210,7 +210,7 @@ body {
     cursor: pointer;
     z-index: 5000;
     display: none;
-    transition: all 0.2s;
+    transition: border-color 0.15s, color 0.15s;
 }
 #backBtn:hover {
     border-color: #ffd700;
@@ -234,6 +234,9 @@ body {
     font-size: 1rem;
     border-color: rgba(255, 59, 48, 0.4);
     color: #ff3b30;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 #coinsBox {
@@ -253,7 +256,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: transform 0.1s;
+}
+
+/* ❤️ KONTENER SERDECZEK W QUIZIE */
+.quiz-hearts-container {
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    letter-spacing: 3px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 
 /* 🛒 SKLEP */
@@ -291,7 +302,7 @@ nav button {
     cursor: pointer;
     flex: 1 1 auto;
     min-width: 100px;
-    transition: all 0.25s ease;
+    transition: all 0.15s ease;
 }
 
 nav button.active-nav {
@@ -519,7 +530,7 @@ nav button.active-nav {
 <div id="backBtn" class="glass-panel" onclick="goBack()">⬅ Powrót</div>
 
 <div id="hud-top">
-    <div id="livesBox" class="glass-panel">Szanse: <span id="lives">4 (X)</span></div>
+    <div id="livesBox" class="glass-panel">Szanse: <span id="lives">❤️❤️❤️❤️</span></div>
     <div id="coinsBox" class="glass-panel">✨ Skarby: <span id="coins" style="color: #ffd700;">0</span></div>
     <div id="shopBtn" class="glass-panel" onclick="toggleShop()">🛒</div>
 </div>
@@ -563,7 +574,7 @@ nav button.active-nav {
 
 <nav id="gameNav">
     <button id="nav-mariacki" onclick="selectCategory('mariacki')">⛪ Mariacki</button>
-    <button id="nav-wojciech" onclick="selectCategory('wojciech')">⛪ Św. Wojciech</button>
+    <button id="nav-wojciech" onclick="selectCategory('wojciech')">⛪ Św. Wojciecha</button>
     <button id="nav-ratusz" onclick="selectCategory('ratusz')">🏛️ Ratusz</button>
 </nav>
 
@@ -577,10 +588,10 @@ nav button.active-nav {
 
 <div id="wojciech" class="section glass-panel">
     <div class="section-img-container">
-        <img class="section-img" src="" alt="Św. Wojciech" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <img class="section-img" src="" alt="Św. Wojciecha" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
         <div class="section-icon-fallback" style="text-align: center; line-height: 180px; font-size: 50px;">⛪</div>
     </div>
-    <div class="section-title">Św. Wojciech</div>
+    <div class="section-title">Św. Wojciecha</div>
 </div>
 
 <div id="ratusz" class="section glass-panel">
@@ -593,6 +604,8 @@ nav button.active-nav {
 
 <div id="quizBox">
     <div class="glass-panel quiz-card">
+        <div id="quizHearts" class="quiz-hearts-container">❤️❤️❤️❤️</div>
+        
         <div class="quiz-image-box" id="quizImageBox">
             <img id="quizImage" src="" alt="Zadanie" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <div class="section-icon-fallback" style="display:none; line-height:220px; text-align: center;">📸 Brak zdjęcia</div>
@@ -615,7 +628,8 @@ let questIndex = 0;
 let wrongAnswersInRow = 0; 
 const maxLives = 4;
 
-const poolAnswers = ["Kościół Mariacki", "Św. Wojciech", "Wieża Ratuszowa", "Sukiennice", "Wawel", "Brama Floriańska"];
+// Zmiana bazy odpowiedzi z Wojciech -> Wojciecha
+const poolAnswers = ["Kościół Mariacki", "Św. Wojciecha", "Wieża Ratuszowa", "Sukiennice", "Wawel", "Brama Floriańska"];
 
 const quests = {
     mariacki: [
@@ -693,10 +707,24 @@ function openQuest(){
     inputEl.focus();
 }
 
+/* ⚙️ DYNAMICZNE GENEROWANIE SERDECZEK W DWÓCH MIEJSCACH */
 function updateLivesDisplay() {
     let currentLives = maxLives - wrongAnswersInRow;
     if(currentLives < 0) currentLives = 0;
-    document.getElementById("lives").innerText = `${currentLives} (X)`;
+    
+    // Tworzenie ciągu serduszek (np. ❤️❤️❤️🖤)
+    let heartsString = "";
+    for(let i = 0; i < maxLives; i++) {
+        if(i < currentLives) {
+            heartsString += "❤️";
+        } else {
+            heartsString += "🖤";
+        }
+    }
+    
+    // Aktualizacja w górnym pasku oraz bezpośrednio nad zdjęciem quizu
+    document.getElementById("lives").innerText = heartsString;
+    document.getElementById("quizHearts").innerText = heartsString;
 }
 
 function submitAnswer() {
@@ -712,9 +740,9 @@ function submitAnswer() {
     if(normalizedCorrect.includes(normalizedTyped) && normalizedTyped.length >= 3){
         coins += 10;
         updateCoins();
-        saveGame();
+        saveGame(); // Szybki zapis tylko w momencie zmiany stanu punktów
         document.getElementById("quizBox").style.display = "none";
-        startTransitionBox(); // Uruchomienie ekranu przejściowego zamiast natychmiastowego przejścia
+        startTransitionBox(); 
     } else {
         wrongAnswersInRow++;
         updateLivesDisplay();
@@ -728,7 +756,6 @@ function submitAnswer() {
     }
 }
 
-/* ⚙️ OBSŁUGA NOWEGO FUNKCJONALNEGO PASKA ŁADOWANIA */
 function startTransitionBox() {
     const transBox = document.getElementById("transitionBox");
     const progressBar = document.getElementById("transitionProgressBar");
@@ -739,8 +766,8 @@ function startTransitionBox() {
     transBox.style.display = "flex";
     
     let width = 0;
-    const duration = 5000; // 5 sekund
-    const intervalTime = 50; // co 50ms aktualizacja
+    const duration = 5000; 
+    const intervalTime = 30; // Zmniejszone opóźnienie sprawdzania dla pełnej płynności paska
     const step = (intervalTime / duration) * 100;
     
     const loadingInterval = setInterval(() => {
@@ -748,7 +775,7 @@ function startTransitionBox() {
         if (width >= 100) {
             width = 100;
             clearInterval(loadingInterval);
-            nextBtn.style.display = "block"; // Pokazuje przycisk po zakończeniu ładowania
+            nextBtn.style.display = "block"; 
         }
         progressBar.style.width = width + "%";
     }, intervalTime);
@@ -822,25 +849,25 @@ function loadGame(){
 }
 function updateCoins(){ document.getElementById("coins").innerText = coins; }
 
+/* ⚡ ZOPTYMALIZOWANE GENEROWANIE ISKIER - lżejsze dla procesora telefonicznego */
 function spawnScale(){
-    const sparks = ["✨", "🔥", "💨"];
+    const sparks = ["✨", "🔥"];
     const s = document.createElement("div");
     s.className = "scale";
     s.innerText = sparks[Math.floor(Math.random() * sparks.length)];
     s.style.left = Math.random() * 100 + "vw";
-    s.style.animationDuration = (3 + Math.random() * 4) + "s";
-    s.style.transform = `scale(${0.5 + Math.random()})`;
+    s.style.animationDuration = (4 + Math.random() * 3) + "s";
+    s.style.transform = `scale(${0.4 + Math.random() * 0.6})`;
     document.body.appendChild(s);
-    setTimeout(() => s.remove(), 7000);
+    setTimeout(() => s.remove(), 6000);
 }
-setInterval(spawnScale, 400);
+setInterval(spawnScale, 600); // Rzadziej renderowane, by strona nie miała mikro-przycięć
 
 document.getElementById("userAnswer").addEventListener("keyup", function(event) {
     if (event.key === "Enter") { submitAnswer(); }
 });
 
 loadGame();
-setInterval(saveGame, 5000);
 </script>
 
 </body>
