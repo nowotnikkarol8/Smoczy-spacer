@@ -71,6 +71,18 @@ body {
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
 }
 
+.welcome-text {
+    max-width: 550px;
+    font-size: calc(0.95rem + 0.2vw);
+    line-height: 1.5;
+    color: #e4e4e7;
+    margin-bottom: 20px;
+}
+
+.welcome-text strong {
+    color: #ffd700;
+}
+
 .menu-image-container {
     width: 100%;
     max-width: 500px;
@@ -95,7 +107,7 @@ body {
     margin: 20px 0;
     padding: 20px;
     line-height: 1.6;
-    font-size: calc(0.95rem + 0.2vw);
+    font-size: calc(0.95rem + 0.1vw);
     color: #e4e4e7;
     text-align: justify;
     box-sizing: border-box;
@@ -106,6 +118,15 @@ body {
     color: #ffd700;
     text-align: center;
     font-size: 1.3rem;
+}
+
+.fun-fact {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed rgba(255, 215, 0, 0.3);
+    font-size: calc(0.85rem + 0.1vw);
+    color: #ffd700;
+    font-style: italic;
 }
 
 .middle-logo-text {
@@ -369,7 +390,7 @@ nav button.active-nav {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    align-items: center; /* Wyśrodkowanie przycisku zatwierdź i inputu */
+    align-items: center;
 }
 
 .answerInput {
@@ -411,14 +432,12 @@ nav button.active-nav {
         padding: 15px 10px;
         margin: 5px auto;
     }
-    /* Przycisk powrotu zostaje w lewym górnym rogu z mniejszym rozmiarem, żeby nie przeszkadzał */
     #backBtn {
         top: 10px;
         left: 10px;
         padding: 6px 12px;
         font-size: 0.85rem;
     }
-    /* HUD zostaje w prawym górnym rogu, idealnie naprzeciwko przycisku powrót */
     #hud-top {
         top: 10px;
         right: 10px;
@@ -445,16 +464,26 @@ nav button.active-nav {
 <div id="mainMenu" class="glass-panel">
     <div id="title">🔮 Magiczna Szkatułka</div>
     
+    <!-- Nowy tekst wprowadzający nad obrazkiem -->
+    <div class="welcome-text">
+        Jeśli trafiliście na tę stronę, to prawdopodobnie trzymacie teraz w rękach <strong>MAGICZNĄ SZKATUŁKĘ</strong>, która ma wiele zastosowań, między innymi może być aparatem fotograficznym.....<br><br>
+        Otwórz wieczko i zajrzyj przez mały otworek, zlokalizowany na jednej ze ścianek. Co widzisz?
+    </div>
+    
     <div class="menu-image-container">
         <img class="menu-img" src="Cameraobscura2.png" alt="Menu obraz" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
         <div class="section-icon-fallback" style="display:none; line-height: 200px; text-align: center; font-size: 50px;">📸</div>
     </div>
     
+    <!-- Zaktualizowany opis Camera Obscura wraz z ciekawostką -->
     <div class="camera-description glass-panel">
-        <h3>Czym jest Camera Obscura?</h3>
+        <h3>I dlaczego obraz jest „do góry nogami"?</h3>
         <p>
-            <strong>Camera obscura</strong> (czyli ciemna komnata) to pradziadek dzisiejszych aparatów fotograficznych. Jest to proste urządzenie optyczne składające się z zaciemnionego pudełka lub pomieszczenia z niewielkim otworem w jednej ze ścian. Światło wpadające przez ten otwór rzutuje na przeciwległą ściankę <strong>odwrócony i pomniejszony obraz</strong> tego, co znajduje się na zewnątrz. W dawnych czasach mechanizm ten służył m.in. artystom jako pomoc przy szkicowaniu pejzaży!
+            Promienie światła odbite od różnych punktów obserwowanego obiektu wpadają przez mały otwór do wnętrza zaciemnionego pudełka. Światło porusza się po liniach prostych, a zatem promienie odbite z góry obiektu biegną w dół, a promienie z dołu biegną w górę. W efekcie na przeciwległej ściance pudełka powstaje obraz rzeczywisty, ale odwrócony do góry nogami i w odbiciu lustrzanym oraz pomniejszony. Im mniejszy otworek, tym obraz jest bardziej ostry, ale jednocześnie ciemniejszy.
         </p>
+        <div class="fun-fact">
+            💡 <strong>Ciekawostka:</strong> Na siatkówce ludzkiego oka obraz także jest odwrócony. To nasz mózg w pierwszych tygodniach życia uczy się interpretować i dostosowywać obraz tak, żebyśmy widzieli świat w prawidłowej orientacji.
+        </div>
     </div>
     
     <div class="middle-logo-text">🐉 Smoczy Spacer</div>
