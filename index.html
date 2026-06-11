@@ -663,7 +663,6 @@ let coins = 0;
 let questIndex = 0;
 let wrongAnswersInRow = 0; 
 
-// ZMIENIONO: dynamiczny limit żyć (zależny od lokacji)
 let maxLives = 4; 
 
 const poolAnswers = ["Kościół Mariacki", "Św. Wojciecha", "Wieża Ratuszowa", "Sukiennice", "Wawel", "Brama Floriańska"];
@@ -689,11 +688,14 @@ const quests = {
         { img: "Ra.5.jpg", c: 2 },
         { img: "Ra.6.jpg", c: 2 }
     ],
+    // Zaktualizowano: Dodano 2 nowe miejsca na zdjęcia (razem 6 zadań)
     sukiennice: [
         { img: "Su.1.jpg", c: 3 },
         { img: "Su.2.jpg", c: 3 },
         { img: "Su.3.jpg", c: 3 },
-        { img: "Su.4.jpg", c: 3 }
+        { img: "Su.4.jpg", c: 3 },
+        { img: "Su.5.jpg", c: 3 }, // Nowe zdjęcie 5
+        { img: "Su.6.jpg", c: 3 }  // Nowe zdjęcie 6
     ]
 };
 
@@ -730,7 +732,6 @@ function selectCategory(category) {
     const navBtn = document.getElementById(`nav-${category}`);
     if(navBtn) navBtn.classList.add('active-nav');
     
-    // ZMIENIONO: Sprawdzenie kategorii i przydzielenie 6 szans dla ratusza oraz sukiennic
     if(category === "ratusz" || category === "sukiennice") {
         maxLives = 6;
     } else {
