@@ -1,3 +1,8 @@
+Oto kompletny, gotowy plik HTML ze zaktualizowanym skryptem. Wkleiłem poprawioną logikę do sekcji `JavaScript` na samym dole – teraz gra bez problemu domyśli się intencji użytkownika, ignorując zbędne słowa (takie jak „pies”, „kubek”, „ksiądz”) oraz popularne literówki (np. „wojceich”).
+
+Możesz skopiować poniższy kod i zapisać go jako nowy plik `.html`:
+
+```html
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -132,7 +137,6 @@ body {
     background: rgba(255, 215, 0, 0.6);
 }
 
-/* NAPRAWIONE: Usunięto position: sticky - teraz nagłówek przewija się normalnie */
 .camera-description h3 {
     margin-top: 0;
     margin-bottom: 15px;
@@ -697,6 +701,14 @@ let wrongAnswersInRow = 0;
 
 let maxLives = 4; 
 
+// Słownik słów kluczowych i literówek jednoznacznie łączących wpis z zabytkiem
+const keywordsMap = {
+    0: ["mariack", "marjack", "mariac"],                         // Kościół Mariacki
+    1: ["wojciech", "wojcieha", "wojceich", "wojceh", "wojt"],   // Św. Wojciecha
+    2: ["ratusz", "wieza", "ratuszow"],                         // Wieża Ratuszowa
+    3: ["sukiennic", "sukienic", "sukinic"]                     // Sukiennice
+};
+
 const poolAnswers = ["Kościół Mariacki", "Św. Wojciecha", "Wieża Ratuszowa", "Sukiennice", "Wawel", "Brama Floriańska"];
 
 const quests = {
@@ -742,7 +754,12 @@ function initCustomText() {
 
 function normalizeText(text) {
     if (!text) return "";
-    return text.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ł/g, "l"); 
+    return text.toLowerCase()
+               .trim()
+               .normalize("NFD")
+               .replace(/[\u0300-\u036f]/g, "") // Usuwanie akcentów
+               .replace(/ł/g, "l")
+               .replace(/[^a-z0-9\s]/g, "");    // Czyszczenie interpunkcji (kropki, przecinki)
 }
 
 function startGame(){
@@ -822,11 +839,21 @@ function submitAnswer() {
     if(typedAnswer.trim() === "") return; 
     
     const q = quests[pendingSection][questIndex];
-    const correctAnswerText = poolAnswers[q.c];
     const normalizedTyped = normalizeText(typedAnswer);
-    const normalizedCorrect = normalizeText(correctAnswerText);
+    
+    // Pobranie dopuszczalnych słów kluczowych dla bieżącego pytania
+    const allowedKeywords = keywordsMap[q.c] || [];
+    
+    // Inteligentne przeszukiwanie ciągu znaków pod kątem wystąpienia słowa kluczowego
+    let isCorrect = false;
+    for (let word of allowedKeywords) {
+        if (normalizedTyped.includes(word)) {
+            isCorrect = true;
+            break;
+        }
+    }
 
-    if(normalizedCorrect.includes(normalizedTyped) && normalizedTyped.length >= 3){
+    if(isCorrect){
         coins += 10;
         updateCoins();
         saveGame();
@@ -929,6 +956,7 @@ function toggleShop(){
     s.style.display = s.style.display === "block" ? "none" : "block";
 }
 
+// Lokalny zapis stanu gry
 function saveGame(){ localStorage.setItem("smoczy_spacer_save", JSON.stringify({coins})); }
 function loadGame(){
     const d = JSON.parse(localStorage.getItem("smoczy_spacer_save"));
@@ -938,6 +966,7 @@ function loadGame(){
 }
 function updateCoins(){ document.getElementById("coins").innerText = coins; }
 
+// Generowanie cząsteczek w tle strony
 function spawnScale(){
     const sparks = ["✨", "🔥"];
     const s = document.createElement("div");
@@ -961,3 +990,5 @@ initCustomText();
 
 </body>
 </html>
+
+```
