@@ -345,7 +345,7 @@ body {
 }
 
 /* ❓ POPUPY I EKRAN PRZEJŚCIOWY */
-#introBox, #quizBox, #settingsBox, #summaryBox, #transitionBox {
+#introBox, #quizBox, #settingsBox, #summaryBox, #transitionBox, #retryNoticeBox {
     position: fixed;
     top: 0;
     left: 0;
@@ -524,6 +524,7 @@ body {
         <div class="section-icon-fallback" style="display:none; line-height: 200px; text-align: center; font-size: 50px;">📸</div>
     </div>
     
+    <!-- Przyciski rozwijania opisu -->
     <button class="btn-link" id="toggleCameraBtn" onclick="toggleCameraDescription()">żeby dowiedzieć się więcej jak z twojej szkatułki zrobić camera obscura kliknij tutaj</button>
 
     <div id="cameraToggleSection">
@@ -568,6 +569,7 @@ body {
     <div class="shop-item"><span>⚔️ Legendarny Miecz</span><span style="color:#ffd700; font-weight:bold;">30 złota</span></div>
 </div>
 
+<!-- Okienko wprowadzające przed grą -->
 <div id="introBox">
     <div class="glass-panel quiz-card">
         <h2 style="color: #ffd700; margin-bottom: 15px;">Przygotowanie do gry</h2>
@@ -575,6 +577,17 @@ body {
             Za chwilę zobaczysz fotografie fragmentów detali słynnych budowli i obiektów, znajdujących się na Rynku Głównym. Spróbuj zgadnąć, jaki to zabytek. Powodzenia!
         </p>
         <button class="btn-primary" onclick="startGame()">🎞️ Start</button>
+    </div>
+</div>
+
+<!-- Okienko przejścia do dogrywki -->
+<div id="retryNoticeBox">
+    <div class="glass-panel quiz-card">
+        <h2 style="color: #ffd700; margin-bottom: 15px;">Dogrywka!</h2>
+        <p style="font-size: 1.1rem; line-height: 1.6; color: #fff; margin-bottom: 25px;">
+            Dobrze, teraz wróćmy do pytań, które nie poszły ci za dobrze.
+        </p>
+        <button class="btn-primary" onclick="startRetryRound()">Przejdź dalej ▶</button>
     </div>
 </div>
 
@@ -619,13 +632,16 @@ body {
         </div>
         <h2 id="quizQuestion" style="font-size: 1.2rem; margin-bottom: 15px;">Jaki to zabytek?</h2>
         
+        <!-- Kontener wpisywania tekstowego -->
         <div class="input-container" id="textInputInterface">
             <input type="text" id="userAnswer" class="answerInput" placeholder="Napisz odpowiedź..." autocomplete="off">
             <button class="btn-primary" style="margin:10px 0 0 0; width:100%; padding:12px; max-width: 280px;" onclick="submitTextAnswer()">Zatwierdź</button>
         </div>
 
+        <!-- Kontener wyboru ABCD -->
         <div class="options-container" id="abcdInterface" style="display: none;">
-            </div>
+            <!-- Przyciski generowane przez JS -->
+        </div>
     </div>
 </div>
 
@@ -648,9 +664,11 @@ let coins = 0;
 let gameProgressPercent = 0;
 let totalLives = 5;
 
-let gameQuestionsPool = []; // Wyselekcjonowane losowe 5 pytań
+let gameQuestionsPool = []; // Wyselekcjonowane losowe 5 unikalnych pytań na rundę 1
+let wrongAnswersPool = [];   // Tutaj lądują pytania, na które gracz źle odpowiedział
 let currentPoolIndex = 0;
 let currentQuestionType = ""; // "text" lub "abcd"
+let isRetryRound = false;     // Flaga informująca, czy trwa dogrywka
 
 // Definicje oryginalnych odpowiedzi i słów kluczowych
 const keywordsMap = {
@@ -739,17 +757,15 @@ function shuffleArray(arr) {
     return arr.sort(() => Math.random() - 0.5);
 }
 
-// Budowanie losowej puli 5 pytań z różnych kategorii
+// Budowanie losowej puli 5 unikalnych pytań (zdjęcia się nie powtarzają w bazie startowej)
 function generateGamePool() {
     let combinedList = [];
-    // Zbierz wszystkie dostępne pytania w jedno miejsce
     Object.keys(allQuests).forEach(cat => {
         allQuests[cat].forEach(q => {
             combinedList.push(q);
         });
     });
     
-    // Wymieszaj i pobierz dokładnie 5 pytań
     shuffleArray(combinedList);
     gameQuestionsPool = combinedList.slice(0, 5);
 }
@@ -763,6 +779,8 @@ function startGame(){
     totalLives = 5;
     gameProgressPercent = 0;
     currentPoolIndex = 0;
+    isRetryRound = false;
+    wrongAnswersPool = [];
     
     generateGamePool();
     updateLivesDisplay();
@@ -771,12 +789,18 @@ function startGame(){
 }
 
 function openQuest(){
-    if(currentPoolIndex >= gameQuestionsPool.length || gameProgressPercent >= 100) {
+    // Jeśli skończyły się pytania z aktualnej puli
+    if(currentPoolIndex >= gameQuestionsPool.length) {
         document.getElementById("quizBox").style.display = "none";
+        
+        // Kryteria sukcesu lub przejścia do dogrywki
         if(gameProgressPercent >= 100) {
             showSummary(true);
+        } else if (totalLives > 0 && wrongAnswersPool.length > 0 && !isRetryRound) {
+            // GRACZ MA ŻYCIA, ALE MNIEJ NIŻ 100% -> URUCHAMIAMY DOGRYWKĘ
+            document.getElementById("retryNoticeBox").style.display = "flex";
         } else {
-            // Jeśli skończyły się pytania, a nie ma 100% i nie przegrał z braku szans
+            // Skończyły się pytania (również w dogrywce) a gracz nie ma 100%
             showSummary(false);
         }
         return;
@@ -790,12 +814,25 @@ function openQuest(){
     imgEl.nextElementSibling.style.display = "none";
     imgEl.src = q.img;
 
-    // Losowanie 50% szans: wpisywanie ("text") albo wygór ABCD ("abcd")
+    // Losowanie 50% szans: wpisywanie ("text") albo wybór ABCD ("abcd")
     if(Math.random() < 0.5) {
         setupTextInputMode();
     } else {
         setupAbcdMode(q);
     }
+}
+
+function startRetryRound() {
+    document.getElementById("retryNoticeBox").style.display = "none";
+    isRetryRound = true;
+    
+    // Podmień główną pulę pytań na te, na które gracz wcześniej źle odpowiedział
+    gameQuestionsPool = [...wrongAnswersPool];
+    shuffleArray(gameQuestionsPool); // Przemieszaj je dla losowości
+    currentPoolIndex = 0;
+    wrongAnswersPool = []; // wyczyść kontener na wypadek kolejnych błędów
+    
+    openQuest();
 }
 
 function setupTextInputMode() {
@@ -817,11 +854,9 @@ function setupAbcdMode(currentQuestion) {
     
     const correctAnswerName = fullNamesMap[currentQuestion.c];
     
-    // Wybierz losowe błędne odpowiedzi z puli głównej
     let wrongOptions = poolAnswers.filter(ans => ans !== correctAnswerName);
     shuffleArray(wrongOptions);
     
-    // Stwórz zestaw 4 opcji (1 dobra + 3 złe)
     let finalOptions = [correctAnswerName, wrongOptions[0], wrongOptions[1], wrongOptions[2]];
     shuffleArray(finalOptions);
     
@@ -882,6 +917,8 @@ function verifyAnswer(selectedText) {
 }
 
 function handleAnswerResult(isCorrect) {
+    const activeQuestion = gameQuestionsPool[currentPoolIndex];
+    
     if(isCorrect) {
         coins += 10;
         gameProgressPercent += 20;
@@ -903,6 +940,12 @@ function handleAnswerResult(isCorrect) {
         gameProgressPercent -= 20;
         if(gameProgressPercent < 0) gameProgressPercent = 0;
         
+        // Dodaj pytanie do bazy pytań "złych", aby powrócić do niego w dogrywce
+        // Sprawdzamy czy już tam nie istnieje by uniknąć duplikatów
+        if(!wrongAnswersPool.some(item => item.img === activeQuestion.img)) {
+            wrongAnswersPool.push(activeQuestion);
+        }
+        
         updateLivesDisplay();
         updatePercentDisplay();
         
@@ -913,16 +956,8 @@ function handleAnswerResult(isCorrect) {
             return;
         }
         
-        // Idź dalej nawet przy złej odpowiedzi (aż do wyczerpania kryteriów)
+        // Przejdź do kolejnego pytania z obecnej puli
         currentPoolIndex++;
-        
-        // Zabezpieczenie na wypadek braku pytań w puli
-        if(currentPoolIndex >= gameQuestionsPool.length) {
-            document.getElementById("quizBox").style.display = "none";
-            showSummary(gameProgressPercent >= 100);
-            return;
-        }
-        
         openQuest();
     }
 }
@@ -937,7 +972,7 @@ function startTransitionBox() {
     transBox.style.display = "flex";
     
     let width = 0;
-    const duration = 2000; // Krótsze przejście (2 sekundy) dla płynności
+    const duration = 2000; 
     const intervalTime = 30; 
     const step = (intervalTime / duration) * 100;
     
@@ -947,7 +982,6 @@ function startTransitionBox() {
             width = 100;
             clearInterval(loadingInterval);
             nextBtn.style.display = "block"; 
-            // Automatyczne kliknięcie po załadowaniu dla wygody
             confirmTransition();
         }
         progressBar.style.width = width + "%";
@@ -974,7 +1008,7 @@ function showSummary(isWin) {
     } else {
         titleEl.innerText = "❌ Przegrałeś";
         msgEl.style.color = "#ff3b30";
-        msgEl.innerText = "Przegrałeś. Niestety twój poziom postępu spadł do 0% i straciłeś wszystkie szanse. Spróbuj jeszcze raz!";
+        msgEl.innerText = "Niestety przegrałeś! Twój poziom postępu spadł do 0% lub skończyły się pytania, a szanse przepadły. Spróbuj jeszcze raz!";
     }
     document.getElementById("summaryBox").style.display = "flex";
 }
@@ -986,6 +1020,7 @@ function closeSummary() {
 
 function goBack(){
     document.getElementById("introBox").style.display = "none";
+    document.getElementById("retryNoticeBox").style.display = "none";
     document.getElementById("quizBox").style.display = "none";
     document.getElementById("settingsBox").style.display = "none";
     document.getElementById("transitionBox").style.display = "none";
