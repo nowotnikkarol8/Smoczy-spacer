@@ -325,35 +325,41 @@ body {
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 
-/* HUD PROCENTÓW Z PASKIEM POSTĘPU */
-#percentBox {
-    padding: 10px 16px;
-    font-weight: bold;
-    font-size: 1rem;
-    border-color: rgba(0, 199, 103, 0.4);
-    color: #00c767;
+/* 📊 NOWY PASEK POSTĘPU W STYLU GRY (POD PYTANIEM) */
+.gui-progress-section {
+    width: 100%;
+    margin: 5px 0 20px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    min-width: 120px;
+    gap: 5px;
 }
 
-.hud-progress-container {
+.gui-progress-label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #00c767;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(0, 199, 103, 0.4);
+}
+
+.gui-progress-container {
     width: 100%;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
+    height: 14px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 7px;
     overflow: hidden;
-    border: 1px solid rgba(0, 199, 103, 0.2);
+    border: 2px solid rgba(0, 199, 103, 0.4);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
 }
 
-.hud-progress-bar {
+.gui-progress-bar {
     width: 0%;
     height: 100%;
-    background: linear-gradient(90deg, #00c767, #ffd700);
-    transition: width 0.4s ease-out; /* Płynne animowanie paska wyżej/niżej */
-    box-shadow: 0 0 6px #00c767;
+    background: linear-gradient(90deg, #00c767 0%, #ffd700 70%, #ff9900 100%);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 12px rgba(0, 299, 103, 0.8);
 }
 
 /* 🛒 SKLEP */
@@ -516,12 +522,9 @@ body {
         right: 10px;
         gap: 6px;
     }
-    #livesBox, #coinsBox, #percentBox {
+    #livesBox, #coinsBox {
         padding: 6px 10px;
         font-size: 0.85rem;
-    }
-    #percentBox {
-        min-width: 90px;
     }
     #shopBtn {
         padding: 6px 10px;
@@ -550,6 +553,7 @@ body {
         <div class="section-icon-fallback" style="display:none; line-height: 200px; text-align: center; font-size: 50px;">📸</div>
     </div>
     
+    <!-- Przyciski rozwijania opisu -->
     <button class="btn-link" id="toggleCameraBtn" onclick="toggleCameraDescription()">żeby dowiedzieć się więcej jak z твоjej szkatułki zrobić camera obscura kliknij tutaj</button>
 
     <div id="cameraToggleSection">
@@ -582,12 +586,6 @@ body {
 <div id="backBtn" class="glass-panel" onclick="goBack()">⬅ Powrót</div>
 
 <div id="hud-top">
-    <div id="percentBox" class="glass-panel">
-        <span>Postęp: <span id="gamePercent">0%</span></span>
-        <div class="hud-progress-container">
-            <div id="hudProgressBar" class="hud-progress-bar"></div>
-        </div>
-    </div>
     <div id="livesBox" class="glass-panel">Szanse: <span id="lives">❤️❤️❤️❤️❤️</span></div>
     <div id="coinsBox" class="glass-panel">✨ Skarby: <span id="coins" style="color: #ffd700;">0</span></div>
     <div id="shopBtn" class="glass-panel" onclick="toggleShop()">🛒</div>
@@ -599,6 +597,7 @@ body {
     <div class="shop-item"><span>⚔️ Legendarny Miecz</span><span style="color:#ffd700; font-weight:bold;">30 złota</span></div>
 </div>
 
+<!-- Okienko wprowadzające przed grą -->
 <div id="introBox">
     <div class="glass-panel quiz-card">
         <h2 style="color: #ffd700; margin-bottom: 15px;">Przygotowanie do gry</h2>
@@ -609,6 +608,7 @@ body {
     </div>
 </div>
 
+<!-- Okienko przejścia do dogrywki -->
 <div id="retryNoticeBox">
     <div class="glass-panel quiz-card">
         <h2 style="color: #ffd700; margin-bottom: 15px;">Dogrywka!</h2>
@@ -660,13 +660,24 @@ body {
         </div>
         <h2 id="quizQuestion" style="font-size: 1.2rem; margin-bottom: 15px;">Jaki to zabytek?</h2>
         
+        <!-- 📊 PASEK POSTĘPU GRACZA POD PYTANIEM -->
+        <div class="gui-progress-section">
+            <div class="gui-progress-label">Twój Postęp: <span id="gamePercent">0%</span></div>
+            <div class="gui-progress-container">
+                <div id="guiProgressBar" class="gui-progress-bar"></div>
+            </div>
+        </div>
+        
+        <!-- Kontener wpisywania tekstowego -->
         <div class="input-container" id="textInputInterface">
             <input type="text" id="userAnswer" class="answerInput" placeholder="Napisz odpowiedź..." autocomplete="off">
             <button class="btn-primary" style="margin:10px 0 0 0; width:100%; padding:12px; max-width: 280px;" onclick="submitTextAnswer()">Zatwierdź</button>
         </div>
 
+        <!-- Kontener wyboru ABCD -->
         <div class="options-container" id="abcdInterface" style="display: none;">
-            </div>
+            <!-- Przyciski generowane przez JS -->
+        </div>
     </div>
 </div>
 
@@ -922,8 +933,8 @@ function updatePercentDisplay() {
     // Aktualizacja tekstu liczbowego
     document.getElementById("gamePercent").innerText = displayVal + "%";
     
-    // Dynamiczne rozciąganie paska graficznego w HUD
-    document.getElementById("hudProgressBar").style.width = displayVal + "%";
+    // Dynamiczne rozciąganie zielono-złotego paska pod pytaniem
+    document.getElementById("guiProgressBar").style.width = displayVal + "%";
 }
 
 function submitTextAnswer() {
