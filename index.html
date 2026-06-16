@@ -56,7 +56,7 @@ body {
     margin: 20px auto;
     padding: 30px 20px;
     box-sizing: border-box;
-    z-index: 9999;
+    z-index: 999;
     text-align: center;
 }
 
@@ -101,7 +101,14 @@ body {
     object-fit: cover;
 }
 
-/* Ograniczenie wysokości i wewnętrzne przewijanie dla całego bloku opisu */
+/* Ukryty kontener Camera Obscura */
+#cameraToggleSection {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
+
 .camera-description {
     width: 100%;
     max-width: 550px;
@@ -116,7 +123,6 @@ body {
     box-sizing: border-box;
 }
 
-/* Stylizacja paska przewijania (scrollbara) */
 .camera-description::-webkit-scrollbar {
     width: 6px;
 }
@@ -238,6 +244,19 @@ body {
     border-color: rgba(255, 255, 255, 0.4);
 }
 
+.btn-link {
+    background: none;
+    border: none;
+    color: #ffd700;
+    text-decoration: underline;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 10px 0;
+    font-weight: 600;
+    line-height: 1.4;
+    max-width: 500px;
+}
+
 /* ⬅ PRZYCISK COFNIJ */
 #backBtn {
     position: fixed;
@@ -305,6 +324,15 @@ body {
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 
+/* HUD PROCENTÓW */
+#percentBox {
+    padding: 10px 16px;
+    font-weight: bold;
+    font-size: 1rem;
+    border-color: rgba(0, 199, 103, 0.4);
+    color: #00c767;
+}
+
 /* 🛒 SKLEP */
 #shopPanel {
     position: fixed;
@@ -316,84 +344,8 @@ body {
     z-index: 3000;
 }
 
-/* 🧭 NAWIGACJA */
-nav {
-    display: none;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
-    z-index: 10;
-    width: 100%;
-    max-width: 580px;
-}
-
-nav button {
-    padding: 10px 14px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    background: rgba(15, 18, 36, 0.6);
-    backdrop-filter: blur(8px);
-    color: #a1a1aa;
-    cursor: pointer;
-    flex: 1 1 auto;
-    min-width: 90px;
-    transition: all 0.15s ease;
-}
-
-nav button.active-nav {
-    color: #000;
-    background: #ffd700;
-    border-color: #ffd700;
-}
-
-/* 🏰 KARTY LOKACJI */
-.section {
-    display: none;
-    text-align: center;
-    width: 100%;
-    max-width: 340px;
-    height: auto;
-    aspect-ratio: 1 / 1.1;
-    border-radius: 24px;
-    border: 2px solid rgba(255, 215, 0, 0.2);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-    z-index: 10;
-    overflow: hidden;
-    margin-top: 10px;
-    box-sizing: border-box;
-}
-
-.section.active {
-    display: flex;
-    flex-direction: column;
-}
-
-.section-img-container {
-    width: 100%;
-    height: 60%;
-    overflow: hidden;
-    position: relative;
-    background: rgba(0,0,0,0.3);
-}
-
-.section-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.section-title {
-    font-size: 1.4rem;
-    font-weight: bold;
-    margin: auto 0;
-    padding: 10px;
-}
-
 /* ❓ POPUPY I EKRAN PRZEJŚCIOWY */
-#quizBox, #settingsBox, #summaryBox, #transitionBox {
+#introBox, #quizBox, #settingsBox, #summaryBox, #transitionBox {
     position: fixed;
     top: 0;
     left: 0;
@@ -405,7 +357,7 @@ nav button.active-nav {
     justify-content: center;
     background: rgba(5, 6, 12, 0.95);
     backdrop-filter: blur(10px);
-    z-index: 999;
+    z-index: 9999;
     padding: 15px;
     box-sizing: border-box;
 }
@@ -453,7 +405,7 @@ nav button.active-nav {
     border-radius: 10px;
 }
 
-/* ⌨️ INPUTY */
+/* ⌨️ INPUTY I BUTTONY ABCD */
 .input-container {
     width: 100%;
     display: flex;
@@ -472,6 +424,32 @@ nav button.active-nav {
     font-size: 1rem;
     box-sizing: border-box;
     text-align: center;
+}
+
+.options-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-option {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 10px;
+    background: rgba(15, 18, 36, 0.6);
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    font-weight: 500;
+}
+
+.btn-option:hover {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
 }
 
 /* ☄️ ISKRY W TLE */
@@ -515,7 +493,7 @@ nav button.active-nav {
         right: 10px;
         gap: 6px;
     }
-    #livesBox, #coinsBox {
+    #livesBox, #coinsBox, #percentBox {
         padding: 6px 10px;
         font-size: 0.85rem;
     }
@@ -546,27 +524,31 @@ nav button.active-nav {
         <div class="section-icon-fallback" style="display:none; line-height: 200px; text-align: center; font-size: 50px;">📸</div>
     </div>
     
-    <div class="camera-description glass-panel">
-        <h3> dlaczego obraz jest „do góry nogami"?</h3>
-        <p>
-            Promienie światła odbite od różnych punktów obserwowanego obiektu wpadają przez mały otwór do wnętrza zaciemnionego pudełka. Światło porusza się po liniach prostych, a zatem promienie odbite z góry obiektu biegną w dół, a promienie z dołu biegną w górę. W efekcie na przeciwległej ściance pudełka powstaje obraz rzeczywisty, ale odwrócony do góry nogami i w odbiciu lustrzanym oraz pomniejszony. Im mniejszy otworek, tym obraz jest bardziej ostry, ale jednocześnie ciemniejszy.
-        </p>
-        <div class="fun-fact">
-            💡 <strong>Ciekawostka:</strong> Na siatkówce ludzkiego oka obraz także jest odwrócony. To nasz mózg w pierwszych tygodniach życia uczy się interpretować i dostosowywać obraz tak, żebyśmy widzieli świat w prawidłowej orientacji.
+    <button class="btn-link" id="toggleCameraBtn" onclick="toggleCameraDescription()">żeby dowiedzieć się więcej jak z twojej szkatułki zrobić camera obscura kliknij tutaj</button>
+
+    <div id="cameraToggleSection">
+        <div class="camera-description glass-panel">
+            <h3> dlaczego obraz jest „do góry nogami"?</h3>
+            <p>
+                Promienie światła odbite od różnych punktów obserwowanego obiektu wpadają przez mały otwór do wnętrza zaciemnionego pudełka. Światło porusza się po liniach prostych, a zatem promienie odbite z góry obiektu biegną w dół, a promienie z dołu biegną w górę. W efekcie na przeciwległej ściance pudełka powstaje obraz rzeczywisty, ale odwrócony do góry nogami i w odbiciu lustrzanym oraz pomniejszony. Im mniejszy otworek, tym obraz jest bardziej ostry, ale jednocześnie ciemniejszy.
+            </p>
+            <div class="fun-fact">
+                💡 <strong>Ciekawostka:</strong> Na siatkówce ludzkiego oka obraz także jest odwrócony. To nasz mózg w pierwszych tygodniach życia uczy się interpretować i dostosowywać obraz tak, żebyśmy widzieli świat w prawidłowej orientacji.
+            </div>
+            
+            <div id="customMenuText" class="additional-menu-text"></div>
         </div>
-        
-        <div id="customMenuText" class="additional-menu-text"></div>
     </div>
     
     <div class="middle-logo-text">🐉 Smoczy Spacer</div>
     <div class="subtitle-text">czyli Kraków od szczegółu do ogółu</div>
 
     <div class="instruction-text">
-        Udaj się teraz na spacer po Rynku Głównym w Krakowie i uważnie przyglądaj się budynkom i obietkom, które się tam znajdują. Następnie zagraj w grę i sprawdż swoją spostrzegawczość.
+        Udaj się teraz na spacer po Rynku Głównym w Krakowie i uważnie przyglądaj się budynkom i obiektom, które się tam znajdują. Następnie zagraj w grę i sprawdź swoją spostrzegawczość.
     </div>
 
     <div id="menuButtons">
-        <button class="btn-primary" onclick="startGame()">▶ Graj</button>
+        <button class="btn-primary" onclick="showIntroBox()">▶ Graj</button>
         <button class="btn-secondary" onclick="openSettings()">⚙ Ustawienia</button>
     </div>
 </div>
@@ -574,7 +556,8 @@ nav button.active-nav {
 <div id="backBtn" class="glass-panel" onclick="goBack()">⬅ Powrót</div>
 
 <div id="hud-top">
-    <div id="livesBox" class="glass-panel">Szanse: <span id="lives">❤️❤️❤️❤️</span></div>
+    <div id="percentBox" class="glass-panel">Postęp: <span id="gamePercent">0%</span></div>
+    <div id="livesBox" class="glass-panel">Szanse: <span id="lives">❤️❤️❤️❤️❤️</span></div>
     <div id="coinsBox" class="glass-panel">✨ Skarby: <span id="coins" style="color: #ffd700;">0</span></div>
     <div id="shopBtn" class="glass-panel" onclick="toggleShop()">🛒</div>
 </div>
@@ -583,6 +566,16 @@ nav button.active-nav {
     <h3>Sklep</h3>
     <div class="shop-item"><span>🐉 Jajo Smoka</span><span style="color:#ffd700; font-weight:bold;">50 złota</span></div>
     <div class="shop-item"><span>⚔️ Legendarny Miecz</span><span style="color:#ffd700; font-weight:bold;">30 złota</span></div>
+</div>
+
+<div id="introBox">
+    <div class="glass-panel quiz-card">
+        <h2 style="color: #ffd700; margin-bottom: 15px;">Przygotowanie do gry</h2>
+        <p style="font-size: 1.05rem; line-height: 1.6; color: #fff; margin-bottom: 25px;">
+            Za chwilę zobaczysz fotografie fragmentów detali słynnych budowli i obiektów, znajdujących się na Rynku Głównym. Spróbuj zgadnąć, jaki to zabytek. Powodzenia!
+        </p>
+        <button class="btn-primary" onclick="startGame()">🎞️ Start</button>
+    </div>
 </div>
 
 <div id="settingsBox">
@@ -596,16 +589,16 @@ nav button.active-nav {
 <div id="summaryBox">
     <div class="glass-panel quiz-card">
         <h2 id="summaryTitle">📊 Wynik</h2>
-        <div id="summaryMessage">Wiadomość motywacyjna</div>
+        <div id="summaryMessage" style="line-height: 1.5; font-size: 1.05rem; margin-bottom: 15px;">Wiadomość motywacyjna</div>
         <button class="btn-primary" style="width: 100%; margin-top: 15px;" onclick="closeSummary()">Kontynuuj</button>
     </div>
 </div>
 
 <div id="transitionBox">
     <div class="glass-panel quiz-card">
-        <h2 style="color: #ffd700; margin-bottom: 15px;">🎉 Gratulacje!</h2>
+        <h2 style="color: #ffd700; margin-bottom: 15px;">🎉 Dobra odpowiedź!</h2>
         <p style="font-size: 1.1rem; line-height: 1.5; color: #fff;">
-            Teraz pójdź i sprawdź swoją spostrzegawczość! Zobacz, w jakim czasie znajdziesz te wszystkie fragmenty detali, które widziałeś na zdjęciaach.
+            Świetnie ci idzie! Ładowanie kolejnego wyzwania...
         </p>
         
         <div class="progress-container">
@@ -616,59 +609,23 @@ nav button.active-nav {
     </div>
 </div>
 
-<nav id="gameNav">
-    <button id="nav-mariacki" onclick="selectCategory('mariacki')">⛪ Mariacki</button>
-    <button id="nav-wojciech" onclick="selectCategory('wojciech')">⛪ Św. Wojciecha</button>
-    <button id="nav-ratusz" onclick="selectCategory('ratusz')">🏛️ Ratusz</button>
-    <button id="nav-sukiennice" onclick="selectCategory('sukiennice')">🏛️ Sukiennice</button>
-</nav>
-
-<div id="mariacki" class="section glass-panel">
-    <div class="section-img-container">
-        <img class="section-img" src="C:/Users/student/Music/smoczyspacer/152055b6-a98e-4b52-b313-3e6334f451fe.jpg" alt="Kościół Mariacki" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <div class="section-icon-fallback" style="display:none; text-align: center; line-height: 180px; font-size: 50px;">⛪</div>
-    </div>
-    <div class="section-title">Kościół Mariacki</div>
-</div>
-
-<div id="wojciech" class="section glass-panel">
-    <div class="section-img-container">
-        <img class="section-img" src="" alt="Św. Wojciecha" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <div class="section-icon-fallback" style="text-align: center; line-height: 180px; font-size: 50px;">⛪</div>
-    </div>
-    <div class="section-title">Św. Wojciecha</div>
-</div>
-
-<div id="ratusz" class="section glass-panel">
-    <div class="section-img-container">
-        <img class="section-img" src="" alt="Wieża Ratuszowa" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <div class="section-icon-fallback" style="text-align: center; line-height: 180px; font-size: 50px;">🏛️</div>
-    </div>
-    <div class="section-title">Wieża Ratuszowa</div>
-</div>
-
-<div id="sukiennice" class="section glass-panel">
-    <div class="section-img-container">
-        <img class="section-img" src="" alt="Sukiennice" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <div class="section-icon-fallback" style="text-align: center; line-height: 180px; font-size: 50px;">🏛️</div>
-    </div>
-    <div class="section-title">Sukiennice</div>
-</div>
-
 <div id="quizBox">
     <div class="glass-panel quiz-card">
-        <div id="quizHearts" class="quiz-hearts-container">❤️❤️❤️❤️</div>
+        <div id="quizHearts" class="quiz-hearts-container">❤️❤️❤️❤️❤️</div>
         
         <div class="quiz-image-box" id="quizImageBox">
             <img id="quizImage" src="" alt="Zadanie" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <div class="section-icon-fallback" style="display:none; line-height:220px; text-align: center;">📸 Brak zdjęcia</div>
         </div>
-        <h2 id="quizQuestion">Co widzisz na zdjęciu? Wpisz nazwę budynku:</h2>
+        <h2 id="quizQuestion" style="font-size: 1.2rem; margin-bottom: 15px;">Jaki to zabytek?</h2>
         
-        <div class="input-container">
+        <div class="input-container" id="textInputInterface">
             <input type="text" id="userAnswer" class="answerInput" placeholder="Napisz odpowiedź..." autocomplete="off">
-            <button class="btn-primary" style="margin:0; width:100%; padding:12px; max-width: 280px;" onclick="submitAnswer()">Zatwierdź</button>
+            <button class="btn-primary" style="margin:10px 0 0 0; width:100%; padding:12px; max-width: 280px;" onclick="submitTextAnswer()">Zatwierdź</button>
         </div>
+
+        <div class="options-container" id="abcdInterface" style="display: none;">
+            </div>
     </div>
 </div>
 
@@ -687,26 +644,32 @@ utrwalić naświetlony obraz. Fotografia otworkowa wymaga czasu, zaangażowania 
 eksperymentowania, ale daje ogromną satysfakcję.`;
 // ============================================================================
 
-let currentCategoryIndex = 0; 
-const categoryOrder = ["mariacki", "wojciech", "ratusz", "sukiennice"];
-let pendingSection = "mariacki";
 let coins = 0;
-let questIndex = 0;
-let wrongAnswersInRow = 0; 
+let gameProgressPercent = 0;
+let totalLives = 5;
 
-let maxLives = 4; 
+let gameQuestionsPool = []; // Wyselekcjonowane losowe 5 pytań
+let currentPoolIndex = 0;
+let currentQuestionType = ""; // "text" lub "abcd"
 
-// Słownik słów kluczowych i literówek jednoznacznie łączących wpis z zabytkiem
+// Definicje oryginalnych odpowiedzi i słów kluczowych
 const keywordsMap = {
-    0: ["mariack", "marjack", "mariac"],                         // Kościół Mariacki
-    1: ["wojciech", "wojcieha", "wojceich", "wojceh", "wojt"],   // Św. Wojciecha
-    2: ["ratusz", "wieza", "ratuszow"],                         // Wieża Ratuszowa
-    3: ["sukiennic", "sukienic", "sukinic"]                     // Sukiennice
+    0: ["mariack", "marjack", "mariac"],      // Kościół Mariacki
+    1: ["wojciech", "wojcieha", "wojceich", "wojceh", "wojt"], // Św. Wojciecha
+    2: ["ratusz", "wieza", "ratuszow"],       // Wieża Ratuszowa
+    3: ["sukiennic", "sukienic", "sukinic"]   // Sukiennice
+};
+
+const fullNamesMap = {
+    0: "Kościół Mariacki",
+    1: "Św. Wojciecha",
+    2: "Wieża Ratuszowa",
+    3: "Sukiennice"
 };
 
 const poolAnswers = ["Kościół Mariacki", "Św. Wojciecha", "Wieża Ratuszowa", "Sukiennice", "Wawel", "Brama Floriańska"];
 
-const quests = {
+const allQuests = {
     mariacki: [
         { img: "IMG_20260609_140814.jpg", c: 0 },
         { img: "mar1.jpg", c: 0 }, 
@@ -747,99 +710,159 @@ function initCustomText() {
     }
 }
 
+function toggleCameraDescription() {
+    const section = document.getElementById("cameraToggleSection");
+    const btn = document.getElementById("toggleCameraBtn");
+    if (section.style.display === "flex") {
+        section.style.display = "none";
+    } else {
+        section.style.display = "flex";
+    }
+}
+
+function showIntroBox() {
+    document.getElementById("introBox").style.display = "flex";
+}
+
 function normalizeText(text) {
     if (!text) return "";
     return text.toLowerCase()
                .trim()
                .normalize("NFD")
-               .replace(/[\u0300-\u036f]/g, "") // Usuwanie akcentów
+               .replace(/[\u0300-\u036f]/g, "")
                .replace(/ł/g, "l")
-               .replace(/[^a-z0-9\s]/g, "");    // Czyszczenie interpunkcji (kropki, przecinki)
+               .replace(/[^a-z0-9\s]/g, "");
+}
+
+// Funkcja pomocnicza do mieszania tablic
+function shuffleArray(arr) {
+    return arr.sort(() => Math.random() - 0.5);
+}
+
+// Budowanie losowej puli 5 pytań z różnych kategorii
+function generateGamePool() {
+    let combinedList = [];
+    // Zbierz wszystkie dostępne pytania w jedno miejsce
+    Object.keys(allQuests).forEach(cat => {
+        allQuests[cat].forEach(q => {
+            combinedList.push(q);
+        });
+    });
+    
+    // Wymieszaj i pobierz dokładnie 5 pytań
+    shuffleArray(combinedList);
+    gameQuestionsPool = combinedList.slice(0, 5);
 }
 
 function startGame(){
+    document.getElementById("introBox").style.display = "none";
     document.getElementById("mainMenu").style.display = "none";
     document.getElementById("backBtn").style.display = "block";
-    document.getElementById("gameNav").style.display = "flex";
     document.getElementById("hud-top").style.display = "flex";
     
-    currentCategoryIndex = 0;
-    selectCategory(categoryOrder[currentCategoryIndex]);
-}
-
-function selectCategory(category) {
-    pendingSection = category;
-    showSection(category);
+    totalLives = 5;
+    gameProgressPercent = 0;
+    currentPoolIndex = 0;
     
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-nav'));
-    const navBtn = document.getElementById(`nav-${category}`);
-    if(navBtn) navBtn.classList.add('active-nav');
-    
-    if(category === "ratusz" || category === "sukiennice") {
-        maxLives = 6;
-    } else {
-        maxLives = 4;
-    }
-    
-    questIndex = 0;
-    wrongAnswersInRow = 0;
+    generateGamePool();
     updateLivesDisplay();
+    updatePercentDisplay();
     openQuest();
 }
 
-function showSection(id) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    const sec = document.getElementById(id);
-    if(sec) sec.classList.add('active');
-}
-
 function openQuest(){
-    const currentPool = quests[pendingSection];
-    if(questIndex >= currentPool.length) {
+    if(currentPoolIndex >= gameQuestionsPool.length || gameProgressPercent >= 100) {
         document.getElementById("quizBox").style.display = "none";
-        showSummary(false); 
+        if(gameProgressPercent >= 100) {
+            showSummary(true);
+        } else {
+            // Jeśli skończyły się pytania, a nie ma 100% i nie przegrał z braku szans
+            showSummary(false);
+        }
         return;
     }
-    const q = currentPool[questIndex];
+    
+    const q = gameQuestionsPool[currentPoolIndex];
     document.getElementById("quizBox").style.display = "flex";
+    
     const imgEl = document.getElementById("quizImage");
     imgEl.style.display = "block";
     imgEl.nextElementSibling.style.display = "none";
     imgEl.src = q.img;
+
+    // Losowanie 50% szans: wpisywanie ("text") albo wygór ABCD ("abcd")
+    if(Math.random() < 0.5) {
+        setupTextInputMode();
+    } else {
+        setupAbcdMode(q);
+    }
+}
+
+function setupTextInputMode() {
+    currentQuestionType = "text";
+    document.getElementById("quizQuestion").innerText = "Co widzisz na zdjęciu? Wpisz nazwę budynku / obiektu:";
+    document.getElementById("textInputInterface").style.display = "flex";
+    document.getElementById("abcdInterface").style.display = "none";
+    
     const inputEl = document.getElementById("userAnswer");
     inputEl.value = "";
     inputEl.focus();
 }
 
-function updateLivesDisplay() {
-    let currentLives = maxLives - wrongAnswersInRow;
-    if(currentLives < 0) currentLives = 0;
+function setupAbcdMode(currentQuestion) {
+    currentQuestionType = "abcd";
+    document.getElementById("quizQuestion").innerText = "Wskaż prawidłowy zabytek z listy:";
+    document.getElementById("textInputInterface").style.display = "none";
+    document.getElementById("abcdInterface").style.display = "grid";
     
+    const correctAnswerName = fullNamesMap[currentQuestion.c];
+    
+    // Wybierz losowe błędne odpowiedzi z puli głównej
+    let wrongOptions = poolAnswers.filter(ans => ans !== correctAnswerName);
+    shuffleArray(wrongOptions);
+    
+    // Stwórz zestaw 4 opcji (1 dobra + 3 złe)
+    let finalOptions = [correctAnswerName, wrongOptions[0], wrongOptions[1], wrongOptions[2]];
+    shuffleArray(finalOptions);
+    
+    const abcdContainer = document.getElementById("abcdInterface");
+    abcdContainer.innerHTML = "";
+    
+    finalOptions.forEach(optionText => {
+        const btn = document.createElement("button");
+        btn.className = "btn-option";
+        btn.innerText = optionText;
+        btn.onclick = () => verifyAnswer(optionText);
+        abcdContainer.appendChild(btn);
+    });
+}
+
+function updateLivesDisplay() {
     let heartsString = "";
-    for(let i = 0; i < maxLives; i++) {
-        if(i < currentLives) {
+    for(let i = 0; i < 5; i++) {
+        if(i < totalLives) {
             heartsString += "❤️";
         } else {
             heartsString += "🖤";
         }
     }
-    
     document.getElementById("lives").innerText = heartsString;
     document.getElementById("quizHearts").innerText = heartsString;
 }
 
-function submitAnswer() {
+function updatePercentDisplay() {
+    document.getElementById("gamePercent").innerText = gameProgressPercent + "%";
+}
+
+function submitTextAnswer() {
     const inputEl = document.getElementById("userAnswer");
     const typedAnswer = inputEl.value;
     if(typedAnswer.trim() === "") return; 
     
-    const q = quests[pendingSection][questIndex];
+    const q = gameQuestionsPool[currentPoolIndex];
     const normalizedTyped = normalizeText(typedAnswer);
-    
-    // Pobranie dopuszczalnych słów kluczowych dla bieżącego pytania
     const allowedKeywords = keywordsMap[q.c] || [];
     
-    // Inteligentne przeszukiwanie ciągu znaków pod kątem wystąpienia słowa kluczowego
     let isCorrect = false;
     for (let word of allowedKeywords) {
         if (normalizedTyped.includes(word)) {
@@ -847,22 +870,59 @@ function submitAnswer() {
             break;
         }
     }
+    
+    handleAnswerResult(isCorrect);
+}
 
-    if(isCorrect){
+function verifyAnswer(selectedText) {
+    const q = gameQuestionsPool[currentPoolIndex];
+    const correctAnswerName = fullNamesMap[q.c];
+    
+    handleAnswerResult(selectedText === correctAnswerName);
+}
+
+function handleAnswerResult(isCorrect) {
+    if(isCorrect) {
         coins += 10;
+        gameProgressPercent += 20;
+        if(gameProgressPercent > 100) gameProgressPercent = 100;
+        
         updateCoins();
+        updatePercentDisplay();
         saveGame();
+        
         document.getElementById("quizBox").style.display = "none";
-        startTransitionBox(); 
+        
+        if(gameProgressPercent === 100) {
+            showSummary(true);
+        } else {
+            startTransitionBox();
+        }
     } else {
-        wrongAnswersInRow++;
+        totalLives--;
+        gameProgressPercent -= 20;
+        if(gameProgressPercent < 0) gameProgressPercent = 0;
+        
         updateLivesDisplay();
-        if(wrongAnswersInRow >= maxLives || (questIndex + 1) >= quests[pendingSection].length) {
+        updatePercentDisplay();
+        
+        // Krytyczny warunek przegranej: Procenty = 0 ORAZ Życia = 0
+        if(gameProgressPercent === 0 && totalLives <= 0) {
             document.getElementById("quizBox").style.display = "none";
             showSummary(false);
             return;
         }
-        questIndex++;
+        
+        // Idź dalej nawet przy złej odpowiedzi (aż do wyczerpania kryteriów)
+        currentPoolIndex++;
+        
+        // Zabezpieczenie na wypadek braku pytań w puli
+        if(currentPoolIndex >= gameQuestionsPool.length) {
+            document.getElementById("quizBox").style.display = "none";
+            showSummary(gameProgressPercent >= 100);
+            return;
+        }
+        
         openQuest();
     }
 }
@@ -877,7 +937,7 @@ function startTransitionBox() {
     transBox.style.display = "flex";
     
     let width = 0;
-    const duration = 5000; 
+    const duration = 2000; // Krótsze przejście (2 sekundy) dla płynności
     const intervalTime = 30; 
     const step = (intervalTime / duration) * 100;
     
@@ -887,6 +947,8 @@ function startTransitionBox() {
             width = 100;
             clearInterval(loadingInterval);
             nextBtn.style.display = "block"; 
+            // Automatyczne kliknięcie po załadowaniu dla wygody
+            confirmTransition();
         }
         progressBar.style.width = width + "%";
     }, intervalTime);
@@ -894,22 +956,15 @@ function startTransitionBox() {
 
 function confirmTransition() {
     document.getElementById("transitionBox").style.display = "none";
-    nextCategoryAction();
-}
-
-function nextCategoryAction() {
-    currentCategoryIndex++;
-    if(currentCategoryIndex >= categoryOrder.length) {
-        showSummary(true); 
-    } else {
-        selectCategory(categoryOrder[currentCategoryIndex]);
-    }
+    currentPoolIndex++;
+    openQuest();
 }
 
 function showSummary(isWin) {
     const titleEl = document.getElementById("summaryTitle");
     const msgEl = document.getElementById("summaryMessage");
-    if (isWin) {
+    
+    if (isWin && gameProgressPercent === 100) {
         titleEl.innerText = "🎉 Sukces!";
         msgEl.style.color = "#ffd700";
         msgEl.innerText = "Brawo udało ci się przejść całą grę w nagrodę otrzymasz certyfikat dotknij swoim smartfonem mapki rynku krakowskiego ukrytego pod wieczkiem twojej magicznej Szkatułki i odbierz certyfikat";
@@ -917,9 +972,9 @@ function showSummary(isWin) {
         updateCoins();
         saveGame();
     } else {
-        titleEl.innerText = "❌ Koniec Gry";
+        titleEl.innerText = "❌ Przegrałeś";
         msgEl.style.color = "#ff3b30";
-        msgEl.innerText = "Niestety, straciłeś wszystkie szanse w tej kategorii. Spróbuj ponownie!";
+        msgEl.innerText = "Przegrałeś. Niestety twój poziom postępu spadł do 0% i straciłeś wszystkie szanse. Spróbuj jeszcze raz!";
     }
     document.getElementById("summaryBox").style.display = "flex";
 }
@@ -930,18 +985,16 @@ function closeSummary() {
 }
 
 function goBack(){
-    if(document.getElementById("summaryBox").style.display === "flex"){
-        document.getElementById("summaryBox").style.display = "none";
-    }
+    document.getElementById("introBox").style.display = "none";
     document.getElementById("quizBox").style.display = "none";
     document.getElementById("settingsBox").style.display = "none";
     document.getElementById("transitionBox").style.display = "none";
+    document.getElementById("summaryBox").style.display = "none";
+    
     document.getElementById("mainMenu").style.display = "flex";
     document.getElementById("backBtn").style.display = "none";
-    document.getElementById("gameNav").style.display = "none";
     document.getElementById("shopPanel").style.display = "none";
     document.getElementById("hud-top").style.display = "none";
-    showSection('none');
 }
 
 function openSettings(){ document.getElementById("settingsBox").style.display = "flex"; }
@@ -976,7 +1029,7 @@ function spawnScale(){
 setInterval(spawnScale, 600);
 
 document.getElementById("userAnswer").addEventListener("keyup", function(event) {
-    if (event.key === "Enter") { submitAnswer(); }
+    if (event.key === "Enter" && currentQuestionType === "text") { submitTextAnswer(); }
 });
 
 loadGame();
