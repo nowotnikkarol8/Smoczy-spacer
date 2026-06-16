@@ -524,13 +524,14 @@ body {
         <div class="section-icon-fallback" style="display:none; line-height: 200px; text-align: center; font-size: 50px;">📸</div>
     </div>
     
+    <!-- Przyciski rozwijania opisu -->
     <button class="btn-link" id="toggleCameraBtn" onclick="toggleCameraDescription()">żeby dowiedzieć się więcej jak z twojej szkatułki zrobić camera obscura kliknij tutaj</button>
 
     <div id="cameraToggleSection">
         <div class="camera-description glass-panel">
             <h3> dlaczego obraz jest „do góry nogami"?</h3>
             <p>
-                Promienie światła odbite od różnych punktów obserwowanego obiektu wpadają przez mały otwór do wnętrza zaciemnionego pudełka. Światło porusza się po liniach prostych, a zatem promienie odbite z góry obiektu biegną w dół, a promienie z dołu biegną w górę. W efekcie na przeciwległej ściance pudełka powstaje obraz rzeczywisty, ale odwrócony do góry nogami i w odbiciu lustrzanym oraz pomniejszony. Im mniejszy otworek, tym obraz jest bardziej ostry, ale jednocześnie ciemniejszy.
+                Promienie światła odbite od różnych punktów obserwowanego obiektu wpadają przez mały otwór do wnętrza zaciemnionego pudełka. Światło porusza się po liniach prostych, a zatem promienie odbite z góry obiektu biegną w dół, a promienie z dołu biegną w kupę. W efekcie na przeciwległej ściance pudełka powstaje obraz rzeczywisty, ale odwrócony do góry nogami i w odbiciu lustrzanym oraz pomniejszony. Im mniejszy otworek, tym obraz jest bardziej ostry, ale jednocześnie ciemniejszy.
             </p>
             <div class="fun-fact">
                 💡 <strong>Ciekawostka:</strong> Na siatkówce ludzkiego oka obraz także jest odwrócony. To nasz mózg w pierwszych tygodniach życia uczy się interpretować i dostosowywać obraz tak, żebyśmy widzieli świat w prawidłowej orientacji.
@@ -568,6 +569,7 @@ body {
     <div class="shop-item"><span>⚔️ Legendarny Miecz</span><span style="color:#ffd700; font-weight:bold;">30 złota</span></div>
 </div>
 
+<!-- Okienko wprowadzające przed grą -->
 <div id="introBox">
     <div class="glass-panel quiz-card">
         <h2 style="color: #ffd700; margin-bottom: 15px;">Przygotowanie do gry</h2>
@@ -578,6 +580,7 @@ body {
     </div>
 </div>
 
+<!-- Okienko przejścia do dogrywki -->
 <div id="retryNoticeBox">
     <div class="glass-panel quiz-card">
         <h2 style="color: #ffd700; margin-bottom: 15px;">Dogrywka!</h2>
@@ -627,15 +630,18 @@ body {
             <img id="quizImage" src="" alt="Zadanie" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <div class="section-icon-fallback" style="display:none; line-height:220px; text-align: center;">📸 Brak zdjęcia</div>
         </div>
-        h2 id="quizQuestion" style="font-size: 1.2rem; margin-bottom: 15px;">Jaki to zabytek?</h2>
+        <h2 id="quizQuestion" style="font-size: 1.2rem; margin-bottom: 15px;">Jaki to zabytek?</h2>
         
+        <!-- Kontener wpisywania tekstowego -->
         <div class="input-container" id="textInputInterface">
             <input type="text" id="userAnswer" class="answerInput" placeholder="Napisz odpowiedź..." autocomplete="off">
             <button class="btn-primary" style="margin:10px 0 0 0; width:100%; padding:12px; max-width: 280px;" onclick="submitTextAnswer()">Zatwierdź</button>
         </div>
 
+        <!-- Kontener wyboru ABCD -->
         <div class="options-container" id="abcdInterface" style="display: none;">
-            </div>
+            <!-- Przyciski generowane przez JS -->
+        </div>
     </div>
 </div>
 
@@ -663,7 +669,7 @@ let wrongAnswersPool = [];
 let currentPoolIndex = 0;
 let currentQuestionType = ""; 
 let isRetryRound = false;     
-let retryPointsPerQuestion = 20; // Wartość punktowa pojedynczego pytania w dogrywce
+let retryPointsPerQuestion = 20; 
 
 const keywordsMap = {
     0: ["mariack", "marjack", "mariac"],      
@@ -824,9 +830,6 @@ function startRetryRound() {
     currentPoolIndex = 0;
     wrongAnswersPool = []; 
     
-    // 🌟 DYNAMICZNY PODZIAŁ PROCENTÓW: 
-    // Sprawdzamy ile brakuje do 100% i dzielimy to na liczbę pytań, które zostały do poprawy.
-    // Dzięki temu, odpowiadając na wszystkie dobrze, gracz ZAWSZE osiągnie dokładnie 100%.
     const remainingPercent = 100 - gameProgressPercent;
     if (gameQuestionsPool.length > 0) {
         retryPointsPerQuestion = remainingPercent / gameQuestionsPool.length;
@@ -888,7 +891,6 @@ function updateLivesDisplay() {
 }
 
 function updatePercentDisplay() {
-    // Zaokrąglamy wyświetlanie dla estetyki (Math.ceil, aby przy 99.9% pokazało 100%)
     document.getElementById("gamePercent").innerText = Math.ceil(gameProgressPercent) + "%";
 }
 
@@ -925,14 +927,13 @@ function handleAnswerResult(isCorrect) {
     if(isCorrect) {
         coins += 10;
         
-        // Jeśli to dogrywka, dodaj obliczoną dynamicznie wartość, w przeciwnym razie standardowe 20%
         if (isRetryRound) {
             gameProgressPercent += retryPointsPerQuestion;
         } else {
             gameProgressPercent += 20;
         }
         
-        if(gameProgressPercent > 99.9) gameProgressPercent = 100; // Bezpiecznik zaokrągleń
+        if(gameProgressPercent > 99.9) gameProgressPercent = 100; 
         
         updateCoins();
         updatePercentDisplay();
@@ -948,13 +949,11 @@ function handleAnswerResult(isCorrect) {
     } else {
         totalLives--;
         
-        // W dogrywce za błąd nie odejmujemy procentów, by gracz nie wpadał w pętlę bez wyjścia
         if (!isRetryRound) {
             gameProgressPercent -= 20;
             if(gameProgressPercent < 0) gameProgressPercent = 0;
         }
         
-        // Zapisz błędną odpowiedź do bazy dogrywki (tylko w 1. rundzie)
         if(!isRetryRound && !wrongAnswersPool.some(item => item.img === activeQuestion.img)) {
             wrongAnswersPool.push(activeQuestion);
         }
@@ -962,7 +961,6 @@ function handleAnswerResult(isCorrect) {
         updateLivesDisplay();
         updatePercentDisplay();
         
-        // Warunek natychmiastowej przegranej
         if(totalLives <= 0) {
             document.getElementById("quizBox").style.display = "none";
             showSummary(false);
