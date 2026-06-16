@@ -283,6 +283,7 @@ body {
     gap: 10px;
     z-index: 2000;
     display: none;
+    align-items: center;
 }
 
 #livesBox {
@@ -324,19 +325,41 @@ body {
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 
-/* HUD PROCENTÓW */
+/* HUD PROCENTÓW Z PASKIEM POSTĘPU */
 #percentBox {
     padding: 10px 16px;
     font-weight: bold;
     font-size: 1rem;
     border-color: rgba(0, 199, 103, 0.4);
     color: #00c767;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 120px;
+}
+
+.hud-progress-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 199, 103, 0.2);
+}
+
+.hud-progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #00c767, #ffd700);
+    transition: width 0.4s ease-out; /* Płynne animowanie paska wyżej/niżej */
+    box-shadow: 0 0 6px #00c767;
 }
 
 /* 🛒 SKLEP */
 #shopPanel {
     position: fixed;
-    top: 75px;
+    top: 95px;
     right: 20px;
     width: 240px;
     padding: 20px;
@@ -386,7 +409,7 @@ body {
     object-fit: cover;
 }
 
-/* ⏳ PROGRESS BAR (PASEK ŁADOWANIA) */
+/* ⏳ PROGRESS BAR TRANSITION (PASEK ŁADOWANIA KOLEJNEGO PYTANIA) */
 .progress-container {
     width: 100%;
     background: rgba(255, 255, 255, 0.1);
@@ -497,12 +520,15 @@ body {
         padding: 6px 10px;
         font-size: 0.85rem;
     }
+    #percentBox {
+        min-width: 90px;
+    }
     #shopBtn {
         padding: 6px 10px;
         font-size: 0.95rem;
     }
     #shopPanel {
-        top: 60px;
+        top: 80px;
         right: 10px;
     }
 }
@@ -524,14 +550,13 @@ body {
         <div class="section-icon-fallback" style="display:none; line-height: 200px; text-align: center; font-size: 50px;">📸</div>
     </div>
     
-    <!-- Przyciski rozwijania opisu -->
-    <button class="btn-link" id="toggleCameraBtn" onclick="toggleCameraDescription()">żeby dowiedzieć się więcej jak z twojej szkatułki zrobić camera obscura kliknij tutaj</button>
+    <button class="btn-link" id="toggleCameraBtn" onclick="toggleCameraDescription()">żeby dowiedzieć się więcej jak z твоjej szkatułki zrobić camera obscura kliknij tutaj</button>
 
     <div id="cameraToggleSection">
         <div class="camera-description glass-panel">
             <h3> dlaczego obraz jest „do góry nogami"?</h3>
             <p>
-                Promienie światła odbite od różnych punktów obserwowanego obiektu wpadają przez mały otwór do wnętrza zaciemnionego pudełka. Światło porusza się po liniach prostych, a zatem promienie odbite z góry obiektu biegną w dół, a promienie z dołu biegną w kupę. W efekcie na przeciwległej ściance pudełka powstaje obraz rzeczywisty, ale odwrócony do góry nogami i w odbiciu lustrzanym oraz pomniejszony. Im mniejszy otworek, tym obraz jest bardziej ostry, ale jednocześnie ciemniejszy.
+                Promienie światła odbite od różnych punktów obserwowanego obiektu wpadają przez mały otwór do wnętrza zaciemnionego pudełka. Światło porusza się po liniach prostych, a zatem promienie odbite z góry obiektu biegną w dół, a promienie z dołu biegną w górę. W efekcie na przeciwległej ściance pudełka powstaje obraz rzeczywisty, ale odwrócony do góry nogami i w odbiciu lustrzanym oraz pomniejszony. Im mniejszy otworek, tym obraz jest bardziej ostry, ale jednocześnie ciemniejszy.
             </p>
             <div class="fun-fact">
                 💡 <strong>Ciekawostka:</strong> Na siatkówce ludzkiego oka obraz także jest odwrócony. To nasz mózg w pierwszych tygodniach życia uczy się interpretować i dostosowywać obraz tak, żebyśmy widzieli świat w prawidłowej orientacji.
@@ -557,7 +582,12 @@ body {
 <div id="backBtn" class="glass-panel" onclick="goBack()">⬅ Powrót</div>
 
 <div id="hud-top">
-    <div id="percentBox" class="glass-panel">Postęp: <span id="gamePercent">0%</span></div>
+    <div id="percentBox" class="glass-panel">
+        <span>Postęp: <span id="gamePercent">0%</span></span>
+        <div class="hud-progress-container">
+            <div id="hudProgressBar" class="hud-progress-bar"></div>
+        </div>
+    </div>
     <div id="livesBox" class="glass-panel">Szanse: <span id="lives">❤️❤️❤️❤️❤️</span></div>
     <div id="coinsBox" class="glass-panel">✨ Skarby: <span id="coins" style="color: #ffd700;">0</span></div>
     <div id="shopBtn" class="glass-panel" onclick="toggleShop()">🛒</div>
@@ -569,7 +599,6 @@ body {
     <div class="shop-item"><span>⚔️ Legendarny Miecz</span><span style="color:#ffd700; font-weight:bold;">30 złota</span></div>
 </div>
 
-<!-- Okienko wprowadzające przed grą -->
 <div id="introBox">
     <div class="glass-panel quiz-card">
         <h2 style="color: #ffd700; margin-bottom: 15px;">Przygotowanie do gry</h2>
@@ -580,7 +609,6 @@ body {
     </div>
 </div>
 
-<!-- Okienko przejścia do dogrywki -->
 <div id="retryNoticeBox">
     <div class="glass-panel quiz-card">
         <h2 style="color: #ffd700; margin-bottom: 15px;">Dogrywka!</h2>
@@ -632,16 +660,13 @@ body {
         </div>
         <h2 id="quizQuestion" style="font-size: 1.2rem; margin-bottom: 15px;">Jaki to zabytek?</h2>
         
-        <!-- Kontener wpisywania tekstowego -->
         <div class="input-container" id="textInputInterface">
             <input type="text" id="userAnswer" class="answerInput" placeholder="Napisz odpowiedź..." autocomplete="off">
             <button class="btn-primary" style="margin:10px 0 0 0; width:100%; padding:12px; max-width: 280px;" onclick="submitTextAnswer()">Zatwierdź</button>
         </div>
 
-        <!-- Kontener wyboru ABCD -->
         <div class="options-container" id="abcdInterface" style="display: none;">
-            <!-- Przyciski generowane przez JS -->
-        </div>
+            </div>
     </div>
 </div>
 
@@ -891,7 +916,14 @@ function updateLivesDisplay() {
 }
 
 function updatePercentDisplay() {
-    document.getElementById("gamePercent").innerText = Math.ceil(gameProgressPercent) + "%";
+    let displayVal = Math.ceil(gameProgressPercent);
+    if(displayVal > 100) displayVal = 100;
+    
+    // Aktualizacja tekstu liczbowego
+    document.getElementById("gamePercent").innerText = displayVal + "%";
+    
+    // Dynamiczne rozciąganie paska graficznego w HUD
+    document.getElementById("hudProgressBar").style.width = displayVal + "%";
 }
 
 function submitTextAnswer() {
