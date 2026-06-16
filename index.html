@@ -627,7 +627,7 @@ body {
             <img id="quizImage" src="" alt="Zadanie" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <div class="section-icon-fallback" style="display:none; line-height:220px; text-align: center;">📸 Brak zdjęcia</div>
         </div>
-        <h2 id="quizQuestion" style="font-size: 1.2rem; margin-bottom: 15px;">Jaki to zabytek?</h2>
+        h2 id="quizQuestion" style="font-size: 1.2rem; margin-bottom: 15px;">Jaki to zabytek?</h2>
         
         <div class="input-container" id="textInputInterface">
             <input type="text" id="userAnswer" class="answerInput" placeholder="Napisz odpowiedź..." autocomplete="off">
@@ -658,18 +658,18 @@ let coins = 0;
 let gameProgressPercent = 0;
 let totalLives = 5;
 
-let gameQuestionsPool = []; // Wyselekcjonowane losowe unikalne pytania na rundę
-let wrongAnswersPool = [];   // Tutaj lądują pytania, na które gracz źle odpowiedział
+let gameQuestionsPool = []; 
+let wrongAnswersPool = [];   
 let currentPoolIndex = 0;
-let currentQuestionType = ""; // "text" lub "abcd"
-let isRetryRound = false;     // Flaga informująca, czy trwa dogrywka
+let currentQuestionType = ""; 
+let isRetryRound = false;     
+let retryPointsPerQuestion = 20; // Wartość punktowa pojedynczego pytania w dogrywce
 
-// Definicje oryginalnych odpowiedzi i słów kluczowych
 const keywordsMap = {
-    0: ["mariack", "marjack", "mariac"],      // Kościół Mariacki
-    1: ["wojciech", "wojcieha", "wojceich", "wojceh", "wojt"], // Św. Wojciecha
-    2: ["ratusz", "wieza", "ratuszow"],       // Wieża Ratuszowa
-    3: ["sukiennic", "sukienic", "sukinic"]   // Sukiennice
+    0: ["mariack", "marjack", "mariac"],      
+    1: ["wojciech", "wojcieha", "wojceich", "wojceh", "wojt"], 
+    2: ["ratusz", "wieza", "ratuszow"],       
+    3: ["sukiennic", "sukienic", "sukinic"]   
 };
 
 const fullNamesMap = {
@@ -679,14 +679,13 @@ const fullNamesMap = {
     3: "Sukiennice"
 };
 
-// 🌟 DUŻA, ROZBUDOWANA PULA LOSOWYCH ZABYTKÓW KRAKOWA DLA PYTAŃ ABCD (Żeby zmylić gracza!)
 const poolAnswers = [
     "Kościół Mariacki", "Św. Wojciecha", "Wieża Ratuszowa", "Sukiennice", 
     "Wawel", "Brama Floriańska", "Barbakan", "Kopiec Kościuszki", 
     "Collegium Maius", "Kościół św. Piotra i Pawła", "Synagoga Remuh", 
     "Kopiec Krakusa", "Plac Nowy", "Zamek w Pieskowej Skale", 
     "Kościół św. Anny", "Krypta Zasłużonych na Skałce", "Manggha", 
-    "Brama Wytrzyszczona", "Smocza Jama", "Pomnik Adama Mickiewicza"
+    "Smocza Jama", "Pomnik Adama Mickiewicza"
 ];
 
 const allQuests = {
@@ -825,6 +824,16 @@ function startRetryRound() {
     currentPoolIndex = 0;
     wrongAnswersPool = []; 
     
+    // 🌟 DYNAMICZNY PODZIAŁ PROCENTÓW: 
+    // Sprawdzamy ile brakuje do 100% i dzielimy to na liczbę pytań, które zostały do poprawy.
+    // Dzięki temu, odpowiadając na wszystkie dobrze, gracz ZAWSZE osiągnie dokładnie 100%.
+    const remainingPercent = 100 - gameProgressPercent;
+    if (gameQuestionsPool.length > 0) {
+        retryPointsPerQuestion = remainingPercent / gameQuestionsPool.length;
+    } else {
+        retryPointsPerQuestion = 20;
+    }
+    
     openQuest();
 }
 
@@ -847,13 +856,11 @@ function setupAbcdMode(currentQuestion) {
     
     const correctAnswerName = fullNamesMap[currentQuestion.c];
     
-    // 🌟 Wyciągamy z puli wyłącznie opcje inne niż poprawna odpowiedź
     let wrongOptions = poolAnswers.filter(ans => ans !== correctAnswerName);
-    shuffleArray(wrongOptions); // Losujemy ich kolejność
+    shuffleArray(wrongOptions); 
     
-    // Tworzymy zestaw: 1 dobra + 3 losowe błędne (zamiast sztywnych pozostałych pytań z gry!)
     let finalOptions = [correctAnswerName, wrongOptions[0], wrongOptions[1], wrongOptions[2]];
-    shuffleArray(finalOptions); // Mieszamy przyciski miejscami
+    shuffleArray(finalOptions); 
     
     const abcdContainer = document.getElementById("abcdInterface");
     abcdContainer.innerHTML = "";
@@ -881,7 +888,8 @@ function updateLivesDisplay() {
 }
 
 function updatePercentDisplay() {
-    document.getElementById("gamePercent").innerText = gameProgressPercent + "%";
+    // Zaokrąglamy wyświetlanie dla estetyki (Math.ceil, aby przy 99.9% pokazało 100%)
+    document.getElementById("gamePercent").innerText = Math.ceil(gameProgressPercent) + "%";
 }
 
 function submitTextAnswer() {
@@ -916,8 +924,15 @@ function handleAnswerResult(isCorrect) {
     
     if(isCorrect) {
         coins += 10;
-        gameProgressPercent += 20;
-        if(gameProgressPercent > 100) gameProgressPercent = 100;
+        
+        // Jeśli to dogrywka, dodaj obliczoną dynamicznie wartość, w przeciwnym razie standardowe 20%
+        if (isRetryRound) {
+            gameProgressPercent += retryPointsPerQuestion;
+        } else {
+            gameProgressPercent += 20;
+        }
+        
+        if(gameProgressPercent > 99.9) gameProgressPercent = 100; // Bezpiecznik zaokrągleń
         
         updateCoins();
         updatePercentDisplay();
@@ -925,24 +940,30 @@ function handleAnswerResult(isCorrect) {
         
         document.getElementById("quizBox").style.display = "none";
         
-        if(gameProgressPercent === 100) {
+        if(gameProgressPercent >= 100) {
             showSummary(true);
         } else {
             startTransitionBox();
         }
     } else {
         totalLives--;
-        gameProgressPercent -= 20;
-        if(gameProgressPercent < 0) gameProgressPercent = 0;
         
-        if(!wrongAnswersPool.some(item => item.img === activeQuestion.img)) {
+        // W dogrywce za błąd nie odejmujemy procentów, by gracz nie wpadał w pętlę bez wyjścia
+        if (!isRetryRound) {
+            gameProgressPercent -= 20;
+            if(gameProgressPercent < 0) gameProgressPercent = 0;
+        }
+        
+        // Zapisz błędną odpowiedź do bazy dogrywki (tylko w 1. rundzie)
+        if(!isRetryRound && !wrongAnswersPool.some(item => item.img === activeQuestion.img)) {
             wrongAnswersPool.push(activeQuestion);
         }
         
         updateLivesDisplay();
         updatePercentDisplay();
         
-        if(gameProgressPercent === 0 && totalLives <= 0) {
+        // Warunek natychmiastowej przegranej
+        if(totalLives <= 0) {
             document.getElementById("quizBox").style.display = "none";
             showSummary(false);
             return;
@@ -989,7 +1010,7 @@ function showSummary(isWin) {
     const titleEl = document.getElementById("summaryTitle");
     const msgEl = document.getElementById("summaryMessage");
     
-    if (isWin && gameProgressPercent === 100) {
+    if (isWin && gameProgressPercent >= 100) {
         titleEl.innerText = "🎉 Sukces!";
         msgEl.style.color = "#ffd700";
         msgEl.innerText = "Brawo udało ci się przejść całą grę w nagrodę otrzymasz certyfikat dotknij swoim smartfonem mapki rynku krakowskiego ukrytego pod wieczkiem twojej magicznej Szkatułki i odbierz certyfikat";
@@ -999,7 +1020,7 @@ function showSummary(isWin) {
     } else {
         titleEl.innerText = "❌ Przegrałeś";
         msgEl.style.color = "#ff3b30";
-        msgEl.innerText = "Niestety przegrałeś! Twój poziom postępu spadł do 0% lub skończyły się pytania, a szanse przepadły. Spróbuj jeszcze raz!";
+        msgEl.innerText = "Niestety przegrałeś! Straciłeś wszystkie szanse. Spróbuj jeszcze raz!";
     }
     document.getElementById("summaryBox").style.display = "flex";
 }
@@ -1010,7 +1031,7 @@ function closeSummary() {
 }
 
 function goBack(){
-    document.getElementById("introBox").style.none;
+    document.getElementById("introBox").style.display = "none";
     document.getElementById("retryNoticeBox").style.display = "none";
     document.getElementById("quizBox").style.display = "none";
     document.getElementById("settingsBox").style.display = "none";
